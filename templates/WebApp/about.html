@@ -1,0 +1,152 @@
+{% extends "WebApp/app_base.html" %}
+{% load static %}
+{% block title %}Amazon Fire Dashboard{% endblock %}
+{% block script %}
+    <!-- Custom styles-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link href="{% static '/css/about.css' %}" rel="stylesheet" type="text/css">
+    <!-- Custom scripts-->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="{% static 'js/about.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <!-- Root container for the about page's content -->
+    <div class="container-fluid  bg-gray-300">
+        <!-- About -->
+        <!-- Update the text inside <p> tags in order to update the about text -->
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">About this application</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-left text-dark">
+                            <p>This application serves as a user interface to interact with fire data in the Amazon region. Analysis is conducted starting from the first day of the calendar year, using a predetermined classification method.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Team member listing -->
+        <!-- Change the path in src of <img> tag in order to replace a team member's picture -->
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Team members</h6>
+                    </div>
+                    <div class="card-body text-center">
+                                <span onclick="open_more_info(this)"
+                                      class="p-3 d-inline-block text-decoration-none pointer"><img
+                                        src="{% static 'images/teammembers/morton.png' %}" alt="Douglas Morton"
+                                        class="team-member">
+                                    <p>(SERVIR AST) Douglas Morton</p>
+                                    <span style="display:none;" class="member_title">
+                                        Directed of the science portion of this project.
+                                    </span>
+                                </span>
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/NielsAndela.jpeg' %}" alt="img1"
+                                class="team-member">
+                                                    <p>(SERVIR AST) Niels Andela</p>
+                                                    <span style="display:none;" class="member_title">
+                                                        Co-PI
+                                                    </span>
+                                        </span>
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/AlexGoberna.jpg' %}" alt="img1"
+                                class="team-member">
+                                            <p>(SERVIR SCO GIT) Alexandre Goberna</p>
+                                            <span style="display:none;" class="member_title">
+                                                Software Development Lead for the Amazon Fire Dashboard
+                                            </span>
+                                        </span>
+
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/Githika.JPG' %}" alt="img1"
+                                class="team-member">
+                                                    <p>(SERVIR SCO GIT) Githika Tondapu</p>
+                                                    <span style="display:none;" class="member_title">
+                                                        Webpage Template Author
+                                                    </span>
+                                        </span>
+
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/BillyZ.jpg' %}" alt="img1"
+                                class="team-member">
+                                                    <p>(SERVIR SCO GIT) William Ashmall</p>
+                                                    <span style="display:none;" class="member_title">
+                                                        Software Engineering Lead
+                                                    </span>
+                                        </span>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Disclaimer -->
+    <!-- Update the text inside <strong> in order to update the disclaimer text -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow ml-4 mr-4 mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Disclaimer</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-left text-dark">
+                        <strong>SERVIR Program, NASA, USAID and SERVIR partner organizations
+                            make no express or implied warranty of this application as to the
+                            merchantability or fitness for any particular purpose.
+                            Neither the US Government nor its contractors shall be liable for
+                            special, consequential or incidental damages attributed to this application.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Logos -->
+    <!-- Update the path inside src of <img> tag in order to update the logo images -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow m-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Logos</h6>
+                </div>
+                <div class="card-body text-center">
+                    <a href="" class="p-3"><img class="org-logo modified-logo" src="{% static 'images/logos/uci_logo.png' %}"></a>
+                    <a href="" class="p-3"><img class="org-logo modified-logo" src="{% static 'images/logos/cardiff_logo.png' %}"></a>
+                    <a href="" class="p-3"><img class="org-logo" src="{% static 'images/logos/AMZ_Alliance.jpg' %}"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    </div>
+    {% include 'WebApp/about_about.html' %}
+    <div class="modal fade" id="teamMemberModal" tabindex="-1" role="dialog" aria-labelledby="teamMemberModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="teamMemberModalLabel">Team Member Name</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add team member information here -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{
+  "SECRET_KEY": "",
+  "ALLOWED_HOSTS": [],
+  "CSRF_TRUSTED_ORIGINS": [],
+  "DATA_DIR" : "",
+  "DB": "",
+  "USER": "",
+  "HOST": "",
+  "PASS" : "",
+  "PORT": "",
+  "ZIP_MOUNT_POINT": ""
+}

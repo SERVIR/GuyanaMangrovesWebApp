@@ -1,0 +1,177 @@
+{% extends "WebApp/app_base.html" %}
+{% load static %}
+
+{% block title %}Amazon Fire Dashboard{% endblock %}
+{% block script %}
+    <!-- Custom styles-->
+
+    <!-- Custom scripts-->
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block content %}
+    <div class="align-items-center justify-content-between bg-gray-300">
+        <div style="position: relative;">
+            <!-- Hero image in the home page -->
+            <!-- If there an image that represents the tool/organization, please update the src in the <img> below -->
+            <div>
+                <img
+                        class="img-fluid hero_style"
+                        src="{% static '/images/hero.jpg' %}"
+                        alt="Hero Image"
+                >
+                <div class="layer">
+                </div>
+                <div class="card-img-overlay ">
+                    <div class="text-center text-white vertical_center">
+                        <!-- Title on the hero image-->
+                        <p id="title_class">
+                            Amazon Fire Dashboard </p>
+                        <!-- Tagline under the title on the hero image-->
+                        <p id="tagline_class">
+                            This web application provides an interface to one of SERVIR's AST Projects; The Amazon Fire
+                            Dashboard. Through this dashboard you can download and interact with fire classification
+                            data in the greater Amazon region.
+                            This web app is created and maintanined by the SERVIR Science Coordination office</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Search bar -->
+        <!-- Search results are based on the title on the cards shown -->
+        <div class="container-fluid">
+                <!-- Description of the website -->
+                <!-- The description can be updated in the <p> tags below -->
+                <div class="row">`
+                    <div class="col-lg-12 mb-4">
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Description</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                </div>
+                                <p>The Amazon Dashboard tracks individual fires in the Amazon region using a new
+                                    approach to cluster and classify VIIRS active fire detections by fire type (see
+                                    Methods).  Based on the fire location, intensity, duration, and spread rate, each
+                                    individual event is classified as a deforestation fire, understory forest fire,
+                                    small clearing & agricultural fire, or savanna fire.  The data and summary figures
+                                    are updated daily using the combined active fire detections from the VIIRS
+                                    instruments on the Suomi-NPP and NOAA-20 satellites.  Please use the map interface
+                                    to explore specific regions or fires of interest, including fires burning in
+                                    protected areas or indigenous territories, or download the data in shapefile format
+                                    for a complete look at 2020 fire activity across the southern Amazon study region
+                                    (0-25S).</p>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Methodology</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                </div>
+                                <p> The Amazon Dashboard is based on a new near-real time methodology (Andela et al.,
+                                    under review) to cluster satellite active fire detections into individual fire
+                                    events, and classify each event as one of four different Amazon fire types. We
+                                    differentiate deforestation fires, understory forest fires, small clearing or
+                                    agricultural fires, and savanna and grassland fires.
+                                    The algorithm tracks five metrics of fire behavior for each individual fire.
+                                    These metrics of fire behavior are subsequently combined with information on land
+                                    cover and historic deforestation within the fire perimeter to identify the specific
+                                    fire type and confidence class (low, moderate, high) for each event. The
+                                    classification methods are explained in more detail below. </p>
+                                <p>Data on individual fires are updated daily for southern hemisphere South America
+                                    (0-25°S) and available in shapefile format for use in any GIS software. The
+                                    shapefile attribute table contains information about each fire event, including fire
+                                    type, data used by the algorithm to estimate fire type, as well as other practical
+                                    information for land management purposes (Table 1). </p>
+                                <p> For questions, please contact Niels Andela or Douglas Morton.</p>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Shapefile Attribute Table Reference</h6>
+                            </div>
+                            <div class="card-body">
+                                    <figure class="wp-block-table"><table class=""><thead><tr><th>Attribute Class</th><th>Attribute</th><th>Explanation / Units</th></tr></thead><tbody><tr style="border-top: 2px solid gray"><td>Fire type classification</td><td>cluster_ID</td><td> Unique identifier number of fire event, changes with each daily updated</td></tr><tr><td>
+                </td><td>fire_type</td><td> (1) savanna and grassland, (2) small clearing and agriculture, (3) understory, and (4) deforestation fires </td></tr><tr><td>
+                </td><td>confidence</td><td> (1) low, (2) moderate, (3) high </td></tr><tr style="border-top: 2px solid gray"><td>Metrics used for fire type characterization</td><td>tree cover</td><td>Average tree cover fraction within perimeter (%) from <a rel="noreferrer noopener" aria-label="Hansen et al. (2013 (opens in a new tab)" href="https://science.sciencemag.org/content/342/6160/850" target="_blank">Hansen et al. (2013)</a>
+                </td></tr><tr><td>
+                </td><td>biomass</td><td>Average biomass within fire perimeter (ton ha<sup>-1</sup>) from <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.13139" target="_blank" rel="noreferrer noopener" aria-label="Avitabile (2016)  (opens in a new tab)">Avitabile (2016) </a>
+                </td></tr><tr><td>
+                </td><td>deforestation</td><td>Fraction (0-1) of 550m grid cells with historic deforestation (2015-2019) within fire perimeter from <a rel="noreferrer noopener" aria-label=" INPE (Anon, 2019) (opens in a new tab)" href="http://terrabrasilis.dpi.inpe.br/en/home-page/" target="_blank">INPE (2020)</a>                 </td></tr><tr><td>
+                </td><td>size</td><td>Fire size in km<sup>2</sup></td></tr><tr><td>
+            </td><td>detections</td><td>Total number of fire detections within fire perimeter</td></tr><tr><td>
+                </td><td>frp</td><td>Average fire radiative power (FRP) for all fire detections within fire perimeter in megawatts (MW)</td></tr><tr><td>
+                </td><td>persistence</td><td>Average fire persistence across 550m grid cells within fire perimeter (days)</td></tr><tr><td>
+                </td><td>progression</td><td>Average fire progression fraction across 550m grid cells within perimeter (0-1)</td></tr><tr><td>
+                </td><td>daytime</td><td>Fraction of 1:30pm detections (0-1) for all fire detections within fire perimeter</td></tr><tr style="border-top: 2px solid gray"><td> Status </td><td>start_DOY</td><td>Day of new fire start as of day of year (1-366)</td></tr><tr><td>
+                </td><td>last_DOY</td><td>Most recent active fire detection within fire perimeter as of day of year (1-366)</td></tr><tr><td>
+                </td><td>is_new</td><td>New fire start within past 24 hours (1) or existing fire (0)</td></tr><tr><td>
+                </td><td>is_active</td><td>Fire was active within the past 10 days (1) or not (0)</td></tr><tr><td>
+                </td><td>biome</td><td>Fire is within (1) or outside (0) the Amazon biome according to <a href="https://www.amazoniasocioambiental.org/" target="_blank" rel="noreferrer noopener" aria-label="RAISG (opens in a new tab)">RAISG</a>
+                </td></tr><tr><td>
+                </td><td>protected</td><td>Fraction (0-1) of fire occuring within protected area or indigenous land according to <a href="https://www.amazoniasocioambiental.org/" target="_blank" rel="noreferrer noopener" aria-label="RAISG (opens in a new tab)">RAISG</a>
+                </td></tr></tbody></table></figure>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Tracking wildfires in near-real time</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                </div>
+                                <p> Recent work by <a rel="noreferrer noopener" aria-label="Oliva and Schroeder (2015) (opens in a new tab)" href="https://www.sciencedirect.com/science/article/pii/S003442571500019X" target="_blank">Oliva and Schroeder (2015)</a> has shown that active fire detections from the Visible Infrared Imaging Radiometer Suite (<a rel="noreferrer noopener" aria-label="Schroeder et al., 2014 (opens in a new tab)" href="https://www.sciencedirect.com/science/article/pii/S0034425713004483" target="_blank">Schroeder et al., 2014</a>) can be used to map burned area of slow moving forest fires in near real-time. Here we combine the 375 m day and nighttime active fire detections from the VIIRS sensors onboard Suomi-NPP and NOAA20 satellites (see <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer noopener" aria-label="FIRMS (opens in a new tab)">FIRMS</a>) to provide daily burned area estimates at 0.005° resolution (~550 m). </p>
+
+                                <p>We then use the Global Fire Atlas algorithm (<a href="https://www.researchgate.net/publication/327448821_The_Global_Fire_Atlas_of_individual_fire_size_duration_speed_and_direction" target="_blank" rel="noreferrer noopener" aria-label=" (opens in a new tab)">Andela et al., 2019</a>) to track the perimeter of individual wildfires at any given day across the region. Initial comparisons with burned area maps (that are typically available with a 2-3-month delay) indicate good agreement for forested ecosystems (e.g. deforestation and understory fires), but fire spread rates in savannas and grasslands are typically too fast to capture “wall to wall” burned area based on active fire detections alone. This results in artificial fragmentation of some savanna and grassland fire polygons in our dataset. Our main objective, however, is to provide an improved monitoring tool and early identification of forest fire types. </p>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Identifying Fire Type</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Large multiday wildfires contribute to most of global burned area and active fire detections (<a rel="noreferrer noopener" aria-label="Andela et al., 2019 (opens in a new tab)" href="https://www.researchgate.net/publication/327448821_The_Global_Fire_Atlas_of_individual_fire_size_duration_speed_and_direction" target="_blank">Andela et al., 2019</a>).&nbsp; Aggregating active fire detections into individual fire events therefore provides new insights about the nature of these larger fire events. </p>
+                                <p>For each fire event we combine information about land cover (tree cover, biomass, historic deforestation rates) within the fire perimeter and fire characteristics (e.g., fire radiative power, persistence, progression, day-time detection fraction, and size) based on all satellite fire detections within the larger perimeter. The combination of these data provides a unique signature of each fire type that allows for classification using three confidence intervals (low, moderate, and high). </p>
+                                <p>Deforestation fires typically have high initial fire radiative power, as piled woody debris leads to greater energy release, and long fire persistence, since these piles may smolder for days.&nbsp; By contrast, understory forest fires spread slowly for weeks or months, with lower FRP that leads to a higher fraction of nighttime fire detections.&nbsp; </p>
+                                <p>For example, during 2019, the average understory fire event triggered 54 active fire detections and &nbsp;burned 5.1 km<sup>2</sup>. Small fires in forested systems (tree cover &gt;50% and equal or less than 5 fire detections) were classified as small clearing or agricultural fires, a broad class encompassing a range of small fire types with short durations.&nbsp; </p>
+                                <p>To separate savanna and grassland fire from other fire types we combine information on tree cover fraction and historic deforestation rates within the fire perimeter.</p>
+
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Future Work</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>The current methodology was developed based on the 2019 fire season and thresholds were selected based on historic deforestation data (2014 – 2018) and a number (77) of manually selected understory fires. The methods are under active development as we are still awaiting feedback on our manuscript and we are currently collaborating with several partners of the SERVIR Amazonia project to further improve regional training of the algorithm. We therefore recommend to treat the data as an initial estimate and encourage users to critically evaluate the data based on their own regional knowledge. Please contact <a href="mailto:AndelaN@cardiff.ac.uk?subject=Amazon%20Dashboard%20Inquiry">Niels Andela</a> with any suggested improvements on the algorithm.&nbsp;</p>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">References</h6>
+                            </div>
+                            <div class="card-body">
+                        <ul><li>Andela, N., Morton, D. C., Giglio, L., Paugam, R., Chen, Y., Hantson, S., van der Werf, G. R. and Randerson, J. T.: <a rel="noreferrer noopener" aria-label="The Global Fire Atlas of individual fire size, duration, speed, and direction (opens in a new tab)" href="https://www.researchgate.net/publication/327448821_The_Global_Fire_Atlas_of_individual_fire_size_duration_speed_and_direction" target="_blank">The Global Fire Atlas of individual fire size, duration, speed, and direction</a>, Earth Syst. Sci. Data, 11, 529–552, doi:10.5194/essd-11-529-2019, 2019.</li><li>Avitabile, V., Herold, M., Heuvelink, G. B. M., Simon, L., Phillips, O. L., Asner, G. P., Armston, J., Peter, S., Banin, L., Bayol, N. and Berry, N. J.: <a rel="noreferrer noopener" aria-label="An integrated pan-tropical biomass map using multiple reference datasets (opens in a new tab)" href="https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.13139" target="_blank">An integrated pan-tropical biomass map using multiple reference datasets</a>, Glob. Chang. Biol., 22, 1406–1420, doi:10.1111/gcb.13139, 2016.</li><li>Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A., Thau, D., Stehman, S. V., Goetz, S. J., Loveland, T. R., Kommareddy, A., Egorov, A., Chini, L., Justice, C. O. and Townshend, J. R. G.:<a rel="noreferrer noopener" aria-label=" High-resolution global maps of 21st-century forest cover change (opens in a new tab)" href="https://science.sciencemag.org/content/342/6160/850" target="_blank"> High-resolution global maps of 21st-century forest cover change</a>, Science, 342, 850–853, doi:10.1126/science.1244693, 2013.</li><li>National Institute of Space Research (INPE), PRODES deforestation. <a rel="noreferrer noopener" href="http://terrabrasilis.dpi.inpe.br/en/home-page/" target="_blank">http://terrabrasilis.dpi.inpe.br/en/home-page/</a>, accessed March 20, 2020.</li><li>Oliva, P. and Schroeder, W.: <a rel="noreferrer noopener" aria-label="Assessment of VIIRS 375m active fire detection product for direct burned area mapping (opens in a new tab)" href="https://www.sciencedirect.com/science/article/pii/S003442571500019X" target="_blank">Assessment of VIIRS 375m active fire detection product for direct burned area mapping</a>, Remote Sens. Environ., 160, 144–155, doi:10.1016/j.rse.2015.01.010, 2015.</li><li>Schroeder, W., Oliva, P., Giglio, L. and Csiszar, I. A.: <a rel="noreferrer noopener" aria-label="The New VIIRS 375m active fire detection data product: Algorithm description and initial assessment (opens in a new tab)" href="https://www.sciencedirect.com/science/article/pii/S0034425713004483" target="_blank">The New VIIRS 375m active fire detection data product: Algorithm description and initial assessment</a>, Remote Sens. Environ., 143, 85–96, doi:10.1016/j.rse.2013.12.008, 2014.</li></ul>
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Main Content -->
+
+    <script src="{% static '/js/home.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    {% include 'WebApp/home_about.html' %}
+{% endblock %}
