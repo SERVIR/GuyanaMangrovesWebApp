@@ -26,6 +26,7 @@ port = data['PORT']
 
 mount_point = data['ZIP_MOUNT_POINT']
 
+@csrf_exempt
 def get_fire_tables(request):
     json_obj = {}
 
@@ -65,7 +66,7 @@ def get_fire_tables(request):
 
         return JsonResponse(json_obj)
 
-
+@csrf_exempt
 def get_fire_events(request):
     json_obj = {}
 
@@ -124,7 +125,7 @@ def get_fire_events(request):
 
         return JsonResponse(json_obj)
 
-
+@csrf_exempt
 def get_daily_totals_by_type(cur, type, start, end, fire_table, country, state):
     state_str = "" if state == 0 else "and state = '{}'".format(state)
     country_str = "" if country == 0 else "and country = '{}'".format(country)
@@ -145,7 +146,7 @@ def get_daily_totals_by_type(cur, type, start, end, fire_table, country, state):
 
     return result
 
-
+@csrf_exempt
 def get_fire_events_chart(request):
     json_obj = {}
 
@@ -235,7 +236,7 @@ def modify_country(elem):
     number = elem[1]
     return country.decode('UTF-8').lower().title(), number
 
-
+@csrf_exempt
 def get_countries(request):
     json_obj = {}
     countries = [(b'Brazil', 76), (b'Paraguay', 600), (b'Bolivia', 68), (b'Peru', 604), (b'Ecuador', 218),
@@ -246,7 +247,7 @@ def get_countries(request):
 
     return JsonResponse(json_obj)
 
-
+@csrf_exempt
 def get_fire_events_zip(request):
     json_obj = {}
     try:
