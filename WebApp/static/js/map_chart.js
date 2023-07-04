@@ -34,7 +34,11 @@ function check_if_any_changed() {
 }
 
 function toggle_apply() {
-    document.getElementById("apply").disabled = !check_if_any_changed();
+    let apply_elem = document.getElementById("apply");
+    let is_disabled = !check_if_any_changed();
+    apply_elem.disabled = is_disabled;
+    apply_elem.classList.remove("btn-outline-secondary", "btn-primary");
+    apply_elem.classList.add(is_disabled ? "btn-outline-secondary" : "btn-primary");
 }
 
 function is_active(feature) {
@@ -130,7 +134,7 @@ function update_largest_fires() {
         fire_type_square.setAttribute('class', get_type_class(cur_feature));
         cell1.appendChild(fire_type_square);
         cell2.innerHTML = cur_feature.properties.size + ' km<sup>2</sup>';
-        let date = new Date(2019, 0, cur_feature.properties.start_doy);
+        let date = new Date(run_year, 0, cur_feature.properties.start_doy);
         cell3.innerHTML = `${date.toDateString()}`;
     }
 }
@@ -162,7 +166,7 @@ function update_protected_area_alert() {
         fire_type_square.setAttribute('class', get_type_class(cur_feature));
         cell1.appendChild(fire_type_square);
         cell2.innerHTML = cur_feature.properties.size + ' km<sup>2</sup>';
-        let date = new Date(2019, 0, cur_feature.properties.start_doy);
+        let date = new Date(run_year, 0, cur_feature.properties.start_doy);
         cell3.innerHTML = `${date.toDateString()}`;
     }
 }
@@ -217,14 +221,9 @@ function update_chart() {
     let dates = [];
     let state = document.getElementById('selected_state').value
     let country = document.getElementById('selected_country').value
-    let start_date = new Date(document.getElementById('date_input_start').value.replace(/-/g, '\/'));
-    let end_date = new Date(document.getElementById('date_input_end').value.replace(/-/g, '\/'));
-    let first_date = new Date(run_year, 0, 1);
-    let start_doy = Math.abs(start_date - first_date) / 86400000 + 1;
-    let end_doy = Math.abs(end_date - first_date) / 86400000 + 1;
     let context = {
-        "start_doy": start_doy,
-        "end_doy": end_doy,
+        "start_doy": document.getElementById('date_input_start').value.replace(/-/g, '\/'),
+        "end_doy": document.getElementById('date_input_end').value.replace(/-/g, '\/'),
         "year": run_year,
         "fire_table": selected_fire_table,
         "state": state,
@@ -239,11 +238,6 @@ function update_chart() {
         daily_under_count = chart_data['understory'][0];
         daily_def_count = chart_data['deforestation'][0];
         dates = chart_data['dates']
-        console.log(dates)
-        console.log(daily_sav_count)
-        console.log(daily_agri_count)
-        console.log(daily_under_count)
-        console.log(daily_def_count)
 
         Highcharts.chart('chart', {
             chart: {
@@ -260,7 +254,7 @@ function update_chart() {
             xAxis: {
                 categories: dates,
                 labels: {
-                    step: 5
+                    step: Math.round(dates.length / 10)
                 }
             },
             yAxis: {
@@ -319,6 +313,8 @@ function set_last_filters() {
     last_filters_loaded['end_doy'] = end_doy;
     last_filters_loaded['fire_type'] = fire_type;
     last_filters_loaded['biome'] = biome;
+
+    toggle_apply();
 }
 
 
@@ -328,79 +324,82 @@ function update_displayed_data() {
     document.getElementById('load_message').innerHTML = "Filtering Data";
     load_layer.style.display = 'flex';
 
-    if (fire_data_layer != undefined) {
-        map.removeLayer(fire_data_layer);
-    }
+    setTimeout(() => {
 
-    filtered_fire_data = fire_data.filter(filter_user_selections)
-    set_last_filters();
-
-    document.getElementById('load_message').innerHTML = "Updating Statistics";
-
-    update_active_fires();
-    update_new_fires();
-    update_largest_fires();
-    update_protected_area_alert();
-
-    document.getElementById('load_message').innerHTML = "Updating Chart";
-    update_chart();
-
-    document.getElementById('load_message').innerHTML = "Adding Layer to Map";
-
-    fire_data_layer = L.geoJSON(filtered_fire_data, {
-        style: function (feature) {
-            switch (feature.properties.fire_type) {
-                case '1':
-                    return {color: "#00c5ff"};
-                case '2':
-                    return {color: "#ffaa00"};
-                case '3':
-                    return {color: "#38a800"};
-                case '4':
-                    return {color: "#a80000"};
-            }
+        if (fire_data_layer != undefined) {
+            map.removeLayer(fire_data_layer);
         }
-    }).bindTooltip(function (layer) {
-        let is_active = layer.feature.properties.is_active;
-        let is_new = layer.feature.properties.is_new;
-        let size = layer.feature.properties.size;
-        let protected = layer.feature.properties.protected;
-        let start_doy = layer.feature.properties.start_doy;
-        let end_doy = layer.feature.properties.end_doy;
-        let confidence = layer.feature.properties.confidence;
-        let deforestation = layer.feature.properties.deforestation;
-        let tree_cover = layer.feature.properties.tree_cover;
-        let biomass = layer.feature.properties.biomass;
-        let frp = layer.feature.properties.frp;
-        let fire_count = layer.feature.properties.fire_count;
-        let persistence = layer.feature.properties.persistence;
-        let progression = layer.feature.properties.progression;
-        let biome = layer.feature.properties.biome;
+
+        filtered_fire_data = fire_data.filter(filter_user_selections)
+        set_last_filters();
+
+        document.getElementById('load_message').innerHTML = "Updating Statistics";
+
+        update_active_fires();
+        update_new_fires();
+        update_largest_fires();
+        update_protected_area_alert();
+
+        document.getElementById('load_message').innerHTML = "Updating Chart";
+        update_chart();
+
+        document.getElementById('load_message').innerHTML = "Adding Layer to Map";
+
+        fire_data_layer = L.geoJSON(filtered_fire_data, {
+            style: function (feature) {
+                switch (feature.properties.fire_type) {
+                    case '1':
+                        return {color: "#00c5ff"};
+                    case '2':
+                        return {color: "#ffaa00"};
+                    case '3':
+                        return {color: "#38a800"};
+                    case '4':
+                        return {color: "#a80000"};
+                }
+            }
+        }).bindTooltip(function (layer) {
+            let is_active = layer.feature.properties.is_active;
+            let is_new = layer.feature.properties.is_new;
+            let size = layer.feature.properties.size;
+            let protected = layer.feature.properties.protected;
+            let start_doy = layer.feature.properties.start_doy;
+            let end_doy = layer.feature.properties.end_doy;
+            let confidence = layer.feature.properties.confidence;
+            let deforestation = layer.feature.properties.deforestation;
+            let tree_cover = layer.feature.properties.tree_cover;
+            let biomass = layer.feature.properties.biomass;
+            let frp = layer.feature.properties.frp;
+            let fire_count = layer.feature.properties.fire_count;
+            let persistence = layer.feature.properties.persistence;
+            let progression = layer.feature.properties.progression;
+            let biome = layer.feature.properties.biome;
 
 
-        let tooltip = `Fire Type: ${get_type_text(layer.feature)} (Confidence: ${confidence})<br>
-                   Size: ${size} sq km<br>
-                   Average Intensity: ${frp} MW<br>
-                   First Detection DOY: ${(new Date(run_year, 0, start_doy)).toDateString()}<br>
-                   Last Detection DOY: ${(new Date(run_year, 0, end_doy)).toDateString()}<br>
-                   Number of Detections: ${fire_count}<br>
-                   <br><label>Status</label><br><br>
-                   Active in Past 10 Days: ${is_active == 1 ? 'Yes' : 'No'}<br>
-                   New Detection: ${is_new == 1 ? 'Yes' : 'No'}<br>
-                   Intersects Protected Area ${protected == 1 ? 'Yes' : 'No'}<br>
-                   In Amazon Biome ${biome == 1 ? 'Yes' : 'No'}<br>
-                   <br><label>Perimeter Stats</label><br><br>
-                   Historic Deforestation Fraction: ${deforestation}<br>
-                   Tree Cover: ${tree_cover}%<br>
-                   Biomass: ${biomass} ton ha<sup>-1</sup><br>
-                   Average Persistence: ${persistence} days<br>
-                   Average Progression: ${progression}`
-        return tooltip
-    }, {
-        className: "zTop"
-    }).addTo(map);
+            let tooltip = `Fire Type: ${get_type_text(layer.feature)} (Confidence: ${confidence})<br>
+                       Size: ${size} sq km<br>
+                       Average Intensity: ${frp} MW<br>
+                       First Detection DOY: ${(new Date(run_year, 0, start_doy)).toDateString()}<br>
+                       Last Detection DOY: ${(new Date(run_year, 0, end_doy)).toDateString()}<br>
+                       Number of Detections: ${fire_count}<br>
+                       <br><label>Status</label><br><br>
+                       Active in Past 10 Days: ${is_active == 1 ? 'Yes' : 'No'}<br>
+                       New Detection: ${is_new == 1 ? 'Yes' : 'No'}<br>
+                       Intersects Protected Area ${protected == 1 ? 'Yes' : 'No'}<br>
+                       In Amazon Biome ${biome == 1 ? 'Yes' : 'No'}<br>
+                       <br><label>Perimeter Stats</label><br><br>
+                       Historic Deforestation Fraction: ${deforestation}<br>
+                       Tree Cover: ${tree_cover}%<br>
+                       Biomass: ${biomass} ton ha<sup>-1</sup><br>
+                       Average Persistence: ${persistence} days<br>
+                       Average Progression: ${progression}`
+            return tooltip
+        }, {
+            className: "zTop"
+        }).addTo(map);
 
-    load_layer.style.display = 'none';
+        load_layer.style.display = 'none';
+    }, 100);
 }
 
 
@@ -415,6 +414,42 @@ function download_zip() {
     a.click();
 }
 
+function get_batches() {
+  let year = run_year;
+  let month = run_month;
+  let day = run_day;
+
+  let current_date = new Date(year, month - 1, day);
+  let day_of_year = Math.ceil((current_date - new Date(year, 0, 1)) / (1000 * 60 * 60 * 24)) + 1;
+
+  let stride = 30;
+  let ranges = [];
+  for (let i = 0; i < Math.floor(day_of_year / stride); i++) {
+    const start_day = i * stride + 1;
+    const end_day = (i + 1) * stride;
+    ranges.push([start_day, end_day]);
+  }
+
+  if (day_of_year % stride !== 0) {
+    ranges.push([Math.floor(day_of_year / stride) * stride + 1, day_of_year]);
+  }
+  return ranges;
+}
+
+function batch_to_xhr(batch){
+    let start_doy = batch[0];
+    let end_doy = batch[1];
+    let options = {
+        "fire_table": selected_fire_table,
+        "range_start": start_doy,
+        "range_end": end_doy,
+    }
+    return ajax_call_with_progress("get-fire-events", options);
+}
+
+function extract_data(xhr_result){
+    return xhr_result[0]['data'];
+}
 
 function set_fire_data() {
     let load_layer = document.getElementById('loader');
@@ -422,12 +457,15 @@ function set_fire_data() {
     document.getElementById('load_message').innerHTML = "Loading Fire Data";
     load_layer.style.display = 'flex';
 
-    const xhr = ajax_call("get-fire-events", {"fire_table": selected_fire_table});
-    xhr.done(function (result) {
-        fire_data = result['data'];
+    let batches = get_batches();
+    let batches_xhr = batches.map(batch_to_xhr);
+    $.when(...batches_xhr).then(function (){
+        results = [...arguments]
+        fire_data = results.map(extract_data).flat();
 
         update_displayed_data();
     });
+        
 }
 
 

@@ -71,6 +71,19 @@ def get_fire_events(request):
     json_obj = {}
 
     fire_table = request.POST.get("fire_table")
+    range_start = request.POST.get("range_start")
+    range_end = request.POST.get("range_end")
+
+    '''file_name = str(BASE_DIR) + '/WebApp/static/json/{}.json'.format(fire_table)
+
+    f = open(file_name)  # Get the data from the data.json file
+
+    json_obj["data"] = json.load(f)
+
+    response = JsonResponse(json_obj)
+
+    return response'''
+
 
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
@@ -78,7 +91,7 @@ def get_fire_events(request):
 
         sql = """SELECT fires.cluster_id, fires.fire_type, fires.confidence, fires.deforestat, fires.tree_cover, fires.biomass, fires.frp, fires.fire_count, fires.size, fires.persistenc, fires.progressio, fires.biome, fires.country, fires.state, fires.protected, fires.start_doy, fires.last_doy, fires.is_new, fires.is_active, ST_AsGeoJSON(fires.geom)
                  FROM fire_data.{table} fires
-                 WHERE ST_Intersects(ST_MakeEnvelope(-90,-60,-30,10,4326), fires.geom);""".format(table=fire_table)
+                 WHERE ST_Intersects(ST_MakeEnvelope(-90,-60,-30,10,4326), fires.geom) AND {range_start} <= fires.start_doy AND fires.start_doy <= {range_end};""".format(table=fire_table, range_start=range_start, range_end=range_end)
 
         cur.execute(sql)
         data = cur.fetchall()
@@ -116,7 +129,10 @@ def get_fire_events(request):
 
         json_obj["data"] = result
 
-        return JsonResponse(json_obj)
+        response = JsonResponse(json_obj)
+        #response["Uncompressed-File-Size"] = len(json_string.encode("utf-8"))
+
+        return response
 
     except Exception as e:
         print('get_schemas' + e);
@@ -151,8 +167,8 @@ def get_fire_events_chart(request):
     json_obj = {}
 
     fire_table = request.POST.get("fire_table")
-    start_doy = int(request.POST.get("start_doy"))
-    end_doy = int(request.POST.get("end_doy"))
+    start_doy = int(datetime.datetime.strptime(request.POST.get("start_doy"), "%Y/%m/%d").date().strftime('%j'))
+    end_doy = int(datetime.datetime.strptime(request.POST.get("end_doy"), "%Y/%m/%d").date().strftime('%j'))
     year = int(request.POST.get("year"))
     state = int(request.POST.get("state"))
     country = int(request.POST.get("country"))

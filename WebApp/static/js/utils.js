@@ -13,6 +13,34 @@ function ajax_call(ajax_url, ajax_data) {
         });
 }
 
+function ajax_call_with_progress(ajax_url, ajax_data) {
+    return $.ajax({
+        url: ajax_url.replace(/\/?$/, '/'),
+        type: "POST",
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        data: ajax_data,        
+        dataType: "json",
+        xhr: function() {
+            // get the native XMLHttpRequest object
+            var xhr = $.ajaxSettings.xhr();
+
+            // set the onprogress event handler
+            xhr.onprogress = function(evt) {
+                // evt.loaded is the number of bytes that have been received
+                // evt.total is the total number of bytes that are expected to be received
+		let expected_len = evt.total;
+                if(expected_len == 0){
+                    evt.currentTarget.getResponseHeader('Uncompressed-File-Size');
+                }
+                console.log('progress', evt.loaded / expected_len * 100);
+            };
+
+            // return the customized object
+            return xhr;
+        }
+    });
+}
+
 // Set the parent div for a html object
 function set_parent(control, element) {
     document.getElementById(element)
