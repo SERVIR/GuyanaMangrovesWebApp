@@ -86,6 +86,7 @@ def get_fire_events(request):
 
 
     try:
+        print('connecting')
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
         cur = conn.cursor()
 
@@ -94,6 +95,7 @@ def get_fire_events(request):
                  WHERE ST_Intersects(ST_MakeEnvelope(-90,-60,-30,10,4326), fires.geom) AND {range_start} <= fires.start_doy AND fires.start_doy <= {range_end};""".format(table=fire_table, range_start=range_start, range_end=range_end)
 
         cur.execute(sql)
+
         data = cur.fetchall()
         result = []
 
@@ -124,7 +126,6 @@ def get_fire_events(request):
                 "geometry": json.loads(feature[19])
             }
             result.append(feature_json)
-
         conn.close()
 
         json_obj["data"] = result

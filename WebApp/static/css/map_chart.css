@@ -322,11 +322,10 @@ button[disabled] {
     position: absolute;
     display: flex;
     flex-direction: column;
+    left: 44px;
+    top: 126px;
     z-index: 998;
-    bottom: 60px;
     color: gray;
-    left: 50%;
-    transform: translateX(-50%);
     width: auto !important;
     gap: 10px;
 }

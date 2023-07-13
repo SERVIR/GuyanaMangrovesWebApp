@@ -13,6 +13,20 @@ var terrainLayer = L.tileLayer(
     }
 );
 
+//Dark Gray layer
+var darkGrayLayer = L.tileLayer.wms('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    {
+        format: "image/jpeg",
+        transparent: true,
+        attribution:
+            'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+            'rest/services/Reference/Specialty/DeLorme_World_Base_Map/MapServer">ArcGIS</a>',
+        opacity: 1,
+        thumb: "img/delorme.png",
+        displayName: "Dark Gray",
+    }
+);
+
 //DeLorme_World_Base_Map layer
 var deLormeLayer = L.tileLayer.wms(
     "https://server.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}",
@@ -81,9 +95,3 @@ let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
 //Satellite imagery layer
 let satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
-
-//CHIRPS WMS URL
-var chirps_wms = 'https://thredds.servirglobal.net/thredds/wms/Agg/ucsb-chirps_global_0.05deg_daily.nc4';
-
-//ESI MapServer URL
-var esi_wms = 'https://gis1.servirglobal.net/arcgis/rest/services/Global/ESI_4WK/MapServer';

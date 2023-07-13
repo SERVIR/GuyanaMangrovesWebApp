@@ -95,7 +95,7 @@ function get_type_class(feature) {
 function get_type_text(feature) {
     switch (feature.properties.fire_type) {
         case '1':
-            return 'Savannah and Grassland';
+            return 'Savanna and Grassland';
         case '2':
             return 'Small Clearing and Agriculture';
         case '3':
@@ -105,6 +105,13 @@ function get_type_text(feature) {
         default:
             return 'empty';
     }
+}
+
+function center_map_on_feature(feature){
+    let centroid = turf.centroid(feature);
+    let lon = centroid.geometry.coordinates[0];
+    let lat = centroid.geometry.coordinates[1];
+    map.setView([lat, lon], 13);
 }
 
 function update_largest_fires() {
@@ -125,10 +132,7 @@ function update_largest_fires() {
         row.style.cursor = 'pointer';
         row.id = cur_feature.properties.cluster_id;
         row.onclick = function () {
-            let centroid = turf.centroid(cur_feature);
-            let lon = centroid.geometry.coordinates[0];
-            let lat = centroid.geometry.coordinates[1];
-            map.setView([lat, lon], 13);
+            center_map_on_feature(cur_feature)
         };
         let fire_type_square = document.createElement("div")
         fire_type_square.setAttribute('class', get_type_class(cur_feature));
@@ -244,7 +248,7 @@ function update_chart() {
                 type: 'column'
             },
             title: {
-                text: 'Total Fire Events by Date',
+                text: undefined,
                 align: 'left',
                 style: {
                     color: 'gray',
@@ -260,7 +264,7 @@ function update_chart() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Fire Totals'
+                    text: 'Total Active Fires'
                 },
             },
             tooltip: {
@@ -273,7 +277,7 @@ function update_chart() {
                 }
             },
             series: [{
-                name: 'Savannah and Grassland',
+                name: 'Savanna and Grassland',
                 data: daily_sav_count,
                 color: "#00c5ff"
             }, {
@@ -317,6 +321,11 @@ function set_last_filters() {
     toggle_apply();
 }
 
+function click_zoom_to_feature(feature, layer){
+    layer.on('click', function (e) {
+        center_map_on_feature(e.target.feature);
+    })
+}
 
 function update_displayed_data() {
     let load_layer = document.getElementById('loader');
@@ -325,7 +334,6 @@ function update_displayed_data() {
     load_layer.style.display = 'flex';
 
     setTimeout(() => {
-
         if (fire_data_layer != undefined) {
             map.removeLayer(fire_data_layer);
         }
@@ -339,9 +347,6 @@ function update_displayed_data() {
         update_new_fires();
         update_largest_fires();
         update_protected_area_alert();
-
-        document.getElementById('load_message').innerHTML = "Updating Chart";
-        update_chart();
 
         document.getElementById('load_message').innerHTML = "Adding Layer to Map";
 
@@ -357,12 +362,13 @@ function update_displayed_data() {
                     case '4':
                         return {color: "#a80000"};
                 }
-            }
+            },
+            onEachFeature: click_zoom_to_feature
         }).bindTooltip(function (layer) {
             let is_active = layer.feature.properties.is_active;
             let is_new = layer.feature.properties.is_new;
             let size = layer.feature.properties.size;
-            let protected = layer.feature.properties.protected;
+            let protected_area = layer.feature.properties.protected;
             let start_doy = layer.feature.properties.start_doy;
             let end_doy = layer.feature.properties.end_doy;
             let confidence = layer.feature.properties.confidence;
@@ -376,23 +382,24 @@ function update_displayed_data() {
             let biome = layer.feature.properties.biome;
 
 
-            let tooltip = `Fire Type: ${get_type_text(layer.feature)} (Confidence: ${confidence})<br>
+            let tooltip = `<label>Fire Statistics</label><br><br>
+                       Fire Type: ${get_type_text(layer.feature)} (Confidence: ${confidence})<br>
                        Size: ${size} sq km<br>
                        Average Intensity: ${frp} MW<br>
-                       First Detection DOY: ${(new Date(run_year, 0, start_doy)).toDateString()}<br>
-                       Last Detection DOY: ${(new Date(run_year, 0, end_doy)).toDateString()}<br>
+                       First Detection: ${(new Date(run_year, 0, start_doy)).toDateString()}<br>
+                       Latest Detection: ${(new Date(run_year, 0, end_doy)).toDateString()}<br>
                        Number of Detections: ${fire_count}<br>
+                       Average Persistence: ${persistence} days<br>
+                       Average Progression: ${progression}<br>
                        <br><label>Status</label><br><br>
                        Active in Past 10 Days: ${is_active == 1 ? 'Yes' : 'No'}<br>
                        New Detection: ${is_new == 1 ? 'Yes' : 'No'}<br>
-                       Intersects Protected Area ${protected == 1 ? 'Yes' : 'No'}<br>
-                       In Amazon Biome ${biome == 1 ? 'Yes' : 'No'}<br>
-                       <br><label>Perimeter Stats</label><br><br>
+                       Intersects Protected Area: ${protected_area == 1 ? 'Yes' : 'No'}<br>
+                       In Amazon Biome: ${biome == 1 ? 'Yes' : 'No'}<br>
+                       <br><label>Perimeter Statistics</label><br><br>
                        Historic Deforestation Fraction: ${deforestation}<br>
                        Tree Cover: ${tree_cover}%<br>
-                       Biomass: ${biomass} ton ha<sup>-1</sup><br>
-                       Average Persistence: ${persistence} days<br>
-                       Average Progression: ${progression}`
+                       Biomass: ${biomass} ton ha<sup>-1</sup>`
             return tooltip
         }, {
             className: "zTop"
@@ -436,36 +443,27 @@ function get_batches() {
   return ranges;
 }
 
-function batch_to_xhr(batch){
-    let start_doy = batch[0];
-    let end_doy = batch[1];
-    let options = {
-        "fire_table": selected_fire_table,
-        "range_start": start_doy,
-        "range_end": end_doy,
-    }
-    return ajax_call_with_progress("get-fire-events", options);
-}
-
-function extract_data(xhr_result){
-    return xhr_result[0]['data'];
-}
-
 function set_fire_data() {
     let load_layer = document.getElementById('loader');
 
     document.getElementById('load_message').innerHTML = "Loading Fire Data";
     load_layer.style.display = 'flex';
 
-    let batches = get_batches();
-    let batches_xhr = batches.map(batch_to_xhr);
-    $.when(...batches_xhr).then(function (){
-        results = [...arguments]
-        fire_data = results.map(extract_data).flat();
+    let fire_data_script = document.createElement('script');
+    fire_data_script.setAttribute('src', `/static/js/${selected_fire_table}.js`);
+    fire_data_script.setAttribute('type', 'text/javascript');
+    fire_data_script.setAttribute('async', true);
 
-        update_displayed_data();
-    });
-        
+    document.body.appendChild(fire_data_script);
+
+    fire_data_script.addEventListener('load', () => {
+        console.log(fire_data)
+        setTimeout(() => {
+            update_displayed_data();
+        }, 100);
+    })
+
+    update_chart();
 }
 
 
@@ -679,6 +677,9 @@ $(function () {
                 break;
             case "gsatellite":
                 gSatLayer.addTo(map);
+                break;
+            case "darkgray":
+                darkGrayLayer.addTo(map);
                 break;
             default:
                 osm.addTo(map);

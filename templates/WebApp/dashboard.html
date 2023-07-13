@@ -65,11 +65,11 @@
             <!--   // Tab -->
             <div id="slideOutTab" class="slideOutTab">
                 <div>
-                    <p>Statistics</p>
+                    <p>Data Explorer</p>
                 </div>
             </div>
 
-            <div class="card shadow h-70">
+            <div class="card shadow h-100">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Fire Alerts</h6>
                 </div>
@@ -128,10 +128,10 @@
                         </div>
                     </div>
                 </div>
+                <div id="chart" class="w-100 h-30">
+                </div>
             </div>
             <link rel="stylesheet" href="{% static 'css/common.css' %}">
-            <div id="chart" class="card shadow h-30">
-            </div>
         </div>
         <div id="loader">
             <div>
@@ -268,7 +268,7 @@
                                         <div class="d-flex w-40">
                                             <select name="selected_fire_type" id="selected_fire_type" class="form-control" onchange="toggle_apply()">
                                                 <option value="0" selected="selected">All Fire Types</option>
-                                                <option value="1">Savannah and Grassland</option>
+                                                <option value="1">Savanna and Grassland</option>
                                                 <option value="2">Small Clearing and Agriculture</option>
                                                 <option value="3">Understory</option>
                                                 <option value="4">Deforestation</option>
@@ -295,6 +295,13 @@
                                      aria-labelledby="basemaps-tab">
                                     <div class="h-100 text-center">
                                         <div class=" pos d-block">
+                                            <div class="map-thumb">
+                                                <a id="darkgray" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/darkGray.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Dark Gray Map">
+                                                </a>
+                                            </div>
                                             <div class="map-thumb">
                                                 <a id="osm" href="#"
                                                    onclick="add_basemap(this.id);"><img
@@ -361,7 +368,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <label>Savannah and Grassland</label>
+                                                    <label>Savanna and Grassland</label>
                                                 </td>
                                             </tr>
                                             <tr>
