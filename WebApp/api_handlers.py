@@ -274,7 +274,7 @@ def get_fire_events_zip(request):
         expected_file_location = ""
         expected_file_name = ""
         try:
-            expected_file_name = "fire_events_{}_{}_{}.zip".format(run_year, run_month, run_day)
+            expected_file_name = "fires{}{}{}.zip".format(run_year, run_month, run_day)
             expected_file_location = os.path.join(mount_point, expected_file_name)
             does_file_exist = os.path.exists(expected_file_location)
             print(does_file_exist)
