@@ -175,8 +175,7 @@ function extract_properties(feature) {
 function format_detection_summary(feature) {
     let is_active = feature.properties.is_active;
     let is_new = feature.properties.is_new;
-    let start_doy = feature.properties.start_doy;
-    let end_doy = feature.properties.end_doy;
+    let doy = feature.properties.doy;
     let protected_area = feature.properties.protected;
     let frp = feature.properties.frp;
     let confidence = feature.properties.confidence;
@@ -186,8 +185,7 @@ function format_detection_summary(feature) {
     return `<label>Detection Statistics</label><br><br>
                    Fire Type: ${get_type_text(feature)} (Confidence: ${confidence})<br>
                    Intensity: ${frp} MW<br>
-                   Start Day: ${(new Date(run_year, 0, start_doy)).toDateString()}<br>
-                   End Day: ${(new Date(run_year, 0, end_doy)).toDateString()}<br>
+                   Ignition Date: ${(new Date(run_year, 0, doy)).toDateString()}<br>
                    Carbon Emissions: ${c_emissions} tons<br>
                    Dry Matter Emissions: ${dm_emissions} tons<br>
                    <br>
@@ -266,8 +264,7 @@ function update_detections_table() {
             {data: 'is_new', title: 'N'},
             {data: 'is_active', title: 'CA'},
             {data: 'protected', title: 'P'},
-            {data: 'start_doy', title: 'ST'},
-            {data: 'end_doy', title: 'ED'},
+            {data: 'doy', title: 'ID'},
             {data: 'frp', title: 'FRP'},
             {data: 'c_emissions', title: 'CE'},
             {data: 'dm_emissions', title: 'DME'},
@@ -301,13 +298,7 @@ function update_detections_table() {
         }, {
             "targets": 5,
             "render": function (data, type, row) {
-                let date = new Date(run_year, 0, row['start_doy']);
-                return `${date.toISOString().substring(5,10)}`;
-            }
-        }, {
-            "targets": 6,
-            "render": function (data, type, row) {
-                let date = new Date(run_year, 0, row['end_doy']);
+                let date = new Date(run_year, 0, row['doy']);
                 return `${date.toISOString().substring(5,10)}`;
             }
         }]
