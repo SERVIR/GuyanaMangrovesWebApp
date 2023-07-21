@@ -81,7 +81,7 @@ def get_fire_events(request):
     active = str_to_bool(request.POST.get("active"))
     protected = str_to_bool(request.POST.get("protected"))
     biome = str_to_bool(request.POST.get("biome"))
-    new = str_to_bool(request.POST.get("new"))
+    new = str_to_bool(request.POST.get("new_fire"))
     country = int(request.POST.get("country"))
     state = int(request.POST.get("state"))
     start_date = int(datetime.datetime.strptime(request.POST.get("start_date"), "%Y/%m/%d").date().strftime('%j'))

@@ -222,7 +222,7 @@
                                             data-bs-target="#layers" type="button"
                                             role="tab"
                                             aria-controls="layers" aria-selected="true">
-                                        Parameters
+                                        Data Filters
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -249,18 +249,11 @@
                                 <div class="tab-pane active p-2 map-tab" id="layers"
                                      role="tabpanel"
                                      aria-labelledby="layers-tab">
-                                    <a role="button" class="float-left pt-2" href="#" data-bs-toggle="popover"
-                                       title="Run Date"
-                                       data-bs-trigger="focus"
-                                       data-bs-content="Changing this selector will load a new fire event dataset for the specified run date (day of year that fire analysis was conducted)."
-                                       data-html="true">
-                                        <i class="fa-solid fa-circle-info ml-2 info_btn"></i></a>
-                                    <div class="d-flex">
+                                    <div class="d-flex" style="display: none !important;">
                                         <label class="run-date-label no-wrap">Run Date (Y/M/D)</label>
                                         <select name="run-date" id="run-date" class="form-control placeholder-glow">
                                         </select>
                                     </div>
-                                    <hr>
                                     <div class="d-flex">
                                         <a role="button" class="float-left pt-2" href="#" data-bs-toggle="popover"
                                            title="Filters"
