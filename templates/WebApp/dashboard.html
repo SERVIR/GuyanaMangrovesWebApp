@@ -95,7 +95,8 @@
                                         data-bs-target="#fire-database" type="button"
                                         role="tab"
                                         aria-controls="fire-database"
-                                        aria-selected="false"> Fire Database
+                                        aria-selected="false"
+                                        onclick="update_fire_database_table()"> Fire Database
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -104,7 +105,7 @@
                                         data-bs-target="#individual-fires" type="button"
                                         role="tab"
                                         aria-controls="individual-fires"
-                                        aria-selected="false"> Individual Fires
+                                        aria-selected="false"> Detections
                                 </button>
                             </li>
                         </ul>
@@ -156,14 +157,70 @@
                             <!-- This tab is used when there is a need to change basemaps. The basemaps used are present in basemaps.js -->
                             <div class="tab-pane h-100 pt-2" id="fire-database" role="tabpanel"
                                  aria-labelledby="fire-database-tab">
-                                <table id="fire-database-table" class="table table-responsive-sm"></table>
+                                <div id="selected-columns">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="fire_type"
+                                            onclick="toggle_column(this)">Type (T)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="confidence"
+                                            onclick="toggle_column(this)">Confidence (C)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="is_new"
+                                            onclick="toggle_column(this)">New (N)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="is_active"
+                                            onclick="toggle_column(this)">Currently Active (CA)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="biome"
+                                            onclick="toggle_column(this)">Amazon Biome (AB)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="protected"
+                                            onclick="toggle_column(this)">Protected Area (P)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="start_doy"
+                                            onclick="toggle_column(this)">First Detection (FD) (MM-DD)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="end_doy"
+                                            onclick="toggle_column(this)">Latest Detection (LD) (MM-DD)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="size"
+                                            onclick="toggle_column(this)">Size (S) (km<sup>2</sup>)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="progression"
+                                            onclick="toggle_column(this)">Progression (Prog)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="fire_count"
+                                            onclick="toggle_column(this)">Number of Detections (#)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="frp"
+                                            onclick="toggle_column(this)">Fire Radiative Pressure (FRP) (MW)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="persistence"
+                                            onclick="toggle_column(this)">Persistence (Pers) (days)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="biomass"
+                                            onclick="toggle_column(this)">Biomass (BM) (ton ha<sup>-1</sup>)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="tree_cover"
+                                            onclick="toggle_column(this)">Tree Cover (TC)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-target="deforestation"
+                                            onclick="toggle_column(this)">Deforestation (D)
+                                    </button>
+                                </div>
+                                <table id="fire-database-table" class="table table-responsive-sm compact"></table>
                             </div>
                             <!-- Tab pane: Legends -->
                             <!-- This tab is used to display legend for the selected layer(s) -->
                             <div class="tab-pane" id="individual-fires" role="tabpanel"
                                  aria-labelledby="individual-fires-tab">
                                 <div class="h-100 text-center">
-                                    <p>Under Construction</p>
+                                    <div id="fire-summary-container">
+                                        <p id="selected-fire-status"></p>
+                                        <p id="selected-fire-statistics">Select a fire from one of the tables, or the map, to display its associated detections.</p>
+                                        <p id="selected-fire-perimeter"></p>
+                                    </div>
+                                    <p id="selected-fire-summary"></p>
+                                    <table id="fire-detections-table" class="table table-responsive-sm compact"></table>
                                 </div>
                             </div>
                         </div>
@@ -206,10 +263,10 @@
                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseMC" aria-expanded="true"
                         aria-controls="collapseMC">
-                    Map Information
+                    Layers
                 </button>
             </h2>
-            <div id="collapseMC" class="accordion-collapse collapse show"
+            <div id="collapseMC" class="accordion-collapse collapse"
                  aria-labelledby="headingMC" data-bs-parent="#mc_tab_container">
                 <div class="accordion-body">
                     <div id="mc_tabs">
@@ -222,7 +279,7 @@
                                             data-bs-target="#layers" type="button"
                                             role="tab"
                                             aria-controls="layers" aria-selected="true">
-                                        Data Filters
+                                        Filters
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">

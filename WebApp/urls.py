@@ -15,6 +15,7 @@ urlpatterns = [
     path('feedback/', views.feedback, name='feedback'),
 
     path('dashboard/get-fire-events/', api_handlers.get_fire_events, name='get-fire-events'),
+    path('dashboard/get-fire-detections/', api_handlers.get_fire_detections, name='get-fire-detections'),
     path('dashboard/get-fire-tables/', api_handlers.get_fire_tables, name='get-fire-events'),
     path('dashboard/get-fire-events-chart/', api_handlers.get_fire_events_chart, name='get-fire-events-chart'),
     path('dashboard/get-states/', api_handlers.get_states, name='get-states'),

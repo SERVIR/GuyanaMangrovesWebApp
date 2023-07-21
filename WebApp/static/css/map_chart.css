@@ -356,10 +356,40 @@ button[disabled] {
     height: calc(100% - 58px);
 }
 
-#fire-database {
+#fire-database, #individual-fires {
     padding: 25px;
 }
 
 tr {
     cursor: pointer;
+}
+
+#selected-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+#fire-summary-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#selected-fire-status {
+    text-align: left;
+}
+
+#selected-fire-statistics {
+    text-align: center;
+}
+
+#selected-fire-perimeter {
+    text-align: right;
+}
+
+.dataTables_scrollBody, .dataTables_scrollHead {
+    width: auto;
 }

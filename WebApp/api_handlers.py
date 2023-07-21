@@ -72,6 +72,59 @@ def str_to_bool(str):
     return True if str == "true" else False
 
 @csrf_exempt
+def get_fire_detections(request):
+    json_obj = {}
+
+    detections_table = request.POST.get("fire_table").replace('fires', 'detections')
+    start_doy = int(datetime.datetime.strptime(request.POST.get("start_doy"), "%Y/%m/%d").date().strftime('%j'))
+    end_doy = int(datetime.datetime.strptime(request.POST.get("end_doy"), "%Y/%m/%d").date().strftime('%j'))
+    geometry = request.POST.get("geometry")
+
+    try:
+        conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
+        cur = conn.cursor()
+
+        sql = """SELECT detections.fire_type, detections.confidence, detections.frp, detections.protected, detections.start_doy, detections.last_doy, detections.is_new, detections.is_active, detections.c_emmissio, detections.dm_emissio, ST_AsGeoJSON(detections.geom)
+                 FROM fire_data.{table} detections
+                 WHERE ST_Within(detections.geom, ST_GeomFromGeoJSON('{geometry}'))""".format(table=detections_table, start_doy=start_doy, end_doy=end_doy, geometry=geometry)
+
+        cur.execute(sql)
+
+        data = cur.fetchall()
+        result = []
+
+        for feature in data:
+            feature_json = {
+                "type": "Feature",
+                "properties": {
+                    "fire_type": feature[0],
+                    "confidence": feature[1],
+                    "frp": feature[2],
+                    "protected": feature[3],
+                    "start_doy": feature[4],
+                    "end_doy": feature[5],
+                    "is_new": feature[6],
+                    "is_active": feature[7],
+                    "c_emissions": feature[8],
+                    "dm_emissions": feature[9]
+                },
+                "geometry": json.loads(feature[10])
+            }
+            result.append(feature_json)
+        conn.close()
+
+        json_obj["data"] = result
+
+        return JsonResponse(json_obj)
+
+    except Exception as e:
+        print('get_schemas' + e);
+        result = []
+        json_obj["data"] = result
+
+        return JsonResponse(json_obj)
+
+@csrf_exempt
 def get_fire_events(request):
     json_obj = {}
 
