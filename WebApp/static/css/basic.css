@@ -4299,7 +4299,10 @@ input[type="button"].btn-block {
 }
 
 .tab-content > .active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100%;
 }
 
 .navbar {

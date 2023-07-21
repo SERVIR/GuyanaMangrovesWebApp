@@ -43,6 +43,8 @@ def get_fire_tables(request):
             table_name = table[0]
             search_string = "(fires?(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2}))"
             match = re.search(search_string, table_name)
+            if match is None:
+                continue
             year = match.group('year')
             month = match.group('month')
             day = match.group('day')
@@ -66,6 +68,9 @@ def get_fire_tables(request):
 
         return JsonResponse(json_obj)
 
+def str_to_bool(str):
+    return True if str == "true" else False
+
 @csrf_exempt
 def get_fire_events(request):
     json_obj = {}
@@ -73,26 +78,39 @@ def get_fire_events(request):
     fire_table = request.POST.get("fire_table")
     range_start = request.POST.get("range_start")
     range_end = request.POST.get("range_end")
+    active = str_to_bool(request.POST.get("active"))
+    protected = str_to_bool(request.POST.get("protected"))
+    biome = str_to_bool(request.POST.get("biome"))
+    new = str_to_bool(request.POST.get("new"))
+    country = int(request.POST.get("country"))
+    state = int(request.POST.get("state"))
+    start_date = int(datetime.datetime.strptime(request.POST.get("start_date"), "%Y/%m/%d").date().strftime('%j'))
+    end_date = int(datetime.datetime.strptime(request.POST.get("end_date"), "%Y/%m/%d").date().strftime('%j'))
+    fire_type = int(request.POST.get("fire_type"))
 
-    '''file_name = str(BASE_DIR) + '/WebApp/static/json/{}.json'.format(fire_table)
-
-    f = open(file_name)  # Get the data from the data.json file
-
-    json_obj["data"] = json.load(f)
-
-    response = JsonResponse(json_obj)
-
-    return response'''
-
+    filters = """AND ((fires.start_doy BETWEEN {start_date} AND {end_date}) OR (fires.last_doy BETWEEN {start_date} AND {end_date}) OR ({start_date} BETWEEN fires.start_doy AND fires.last_doy) OR ({end_date} BETWEEN fires.start_doy AND fires.last_doy))""".format(start_date=start_date, end_date=end_date)
+    if active:
+        filters += " AND fires.is_active = '1'"
+    if biome:
+        filters += " AND fires.biome = '1'"
+    if new:
+        filters += " AND fires.is_new = '1'"
+    if protected:
+        filters += " AND fires.protected = 1"
+    if country:
+        filters += " AND fires.country = {}".format(country)
+    if state:
+        filters += " AND fires.state = {}".format(state)
+    if fire_type:
+        filters += " AND fires.fire_type = {}".format(fire_type)
 
     try:
-        print('connecting')
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
         cur = conn.cursor()
 
         sql = """SELECT fires.cluster_id, fires.fire_type, fires.confidence, fires.deforestat, fires.tree_cover, fires.biomass, fires.frp, fires.fire_count, fires.size, fires.persistenc, fires.progressio, fires.biome, fires.country, fires.state, fires.protected, fires.start_doy, fires.last_doy, fires.is_new, fires.is_active, ST_AsGeoJSON(fires.geom)
                  FROM fire_data.{table} fires
-                 WHERE ST_Intersects(ST_MakeEnvelope(-90,-60,-30,10,4326), fires.geom) AND {range_start} <= fires.start_doy AND fires.start_doy <= {range_end};""".format(table=fire_table, range_start=range_start, range_end=range_end)
+                 WHERE ST_Intersects(ST_MakeEnvelope(-90,-60,-30,10,4326), fires.geom) AND {range_start} <= fires.start_doy AND fires.start_doy <= {range_end} {filters};""".format(table=fire_table, range_start=range_start, range_end=range_end, filters=filters)
 
         cur.execute(sql)
 
@@ -130,10 +148,7 @@ def get_fire_events(request):
 
         json_obj["data"] = result
 
-        response = JsonResponse(json_obj)
-        #response["Uncompressed-File-Size"] = len(json_string.encode("utf-8"))
-
-        return response
+        return JsonResponse(json_obj)
 
     except Exception as e:
         print('get_schemas' + e);

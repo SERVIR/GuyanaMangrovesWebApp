@@ -1,6 +1,5 @@
 let map;
 let fire_data;
-let filtered_fire_data;
 let fire_data_layer;
 let fire_tables;
 let selected_fire_table;
@@ -12,12 +11,15 @@ let country_data;
 let country_name_to_number = {};
 let state_number_to_country_number = {};
 let last_filters_loaded = {};
+let db_array;
+let selected_fire_data;
 
 function check_if_any_changed() {
     let country_select = document.getElementById('selected_country').value;
     let state_select = document.getElementById('selected_state').value;
     let protected_area = document.getElementById("protected").checked;
     let biome = document.getElementById("biome").checked;
+    let new_fire = document.getElementById("new").checked;
     let active_fire = document.getElementById("active").checked;
     let start_doy = document.getElementById('date_input_start').value;
     let end_doy = document.getElementById('date_input_end').value;
@@ -26,6 +28,7 @@ function check_if_any_changed() {
     return (country_select !== last_filters_loaded['country'] ||
         state_select !== last_filters_loaded['state'] ||
         protected_area !== last_filters_loaded['protected'] ||
+        new_fire !== last_filters_loaded['new'] ||
         biome !== last_filters_loaded['biome'] ||
         active_fire !== last_filters_loaded['active'] ||
         start_doy !== last_filters_loaded['start_doy'] ||
@@ -58,27 +61,17 @@ function is_protected(feature) {
 }
 
 function update_active_fires() {
-    let active_fire_count = filtered_fire_data.filter(is_active).length;
+    let active_fire_count = fire_data.filter(is_active).length;
     document.getElementById('active-fire-count').innerHTML = active_fire_count.toString();
 }
 
 function update_new_fires() {
-    let new_fire_count = filtered_fire_data.filter(is_new).length;
+    let new_fire_count = fire_data.filter(is_new).length;
     document.getElementById('new-fire-count').innerHTML = new_fire_count.toString();
 }
 
-function sort_by_size(feature_x, feature_y) {
-    if (feature_x.properties.size < feature_y.properties.size) {
-        return 1;
-    }
-    if (feature_x.properties.size > feature_y.properties.size) {
-        return -1;
-    }
-    return 0;
-}
-
-function get_type_class(feature) {
-    switch (feature.properties.fire_type) {
+function get_type_class(fire_type) {
+    switch (fire_type) {
         case '1':
             return 'savannah_label';
         case '2':
@@ -107,114 +100,177 @@ function get_type_text(feature) {
     }
 }
 
-function center_map_on_feature(feature){
+
+function center_map_on_feature(feature) {
     let centroid = turf.centroid(feature);
     let lon = centroid.geometry.coordinates[0];
     let lat = centroid.geometry.coordinates[1];
     map.setView([lat, lon], 13);
 }
 
-function update_largest_fires() {
-    let table = document.getElementById("fires-table");
-    let sorted = filtered_fire_data.sort(sort_by_size);
-    let sorted_and_filtered = sorted.filter(is_active);
 
-    if (table.rows.length > 1) {
-        clear_table("fires-table");
+function get_checkbox(bool_value) {
+    if (bool_value) {
+        return '<input type="checkbox" disabled=true checked>';
     }
-
-    for (let i = Math.min(sorted_and_filtered.length - 1, 9); i >= 0; i--) {
-        let cur_feature = sorted_and_filtered[i];
-        let row = table.insertRow(1);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        row.style.cursor = 'pointer';
-        row.id = cur_feature.properties.cluster_id;
-        row.onclick = function () {
-            center_map_on_feature(cur_feature)
-        };
-        let fire_type_square = document.createElement("div")
-        fire_type_square.setAttribute('class', get_type_class(cur_feature));
-        cell1.appendChild(fire_type_square);
-        cell2.innerHTML = cur_feature.properties.size + ' km<sup>2</sup>';
-        let date = new Date(run_year, 0, cur_feature.properties.start_doy);
-        cell3.innerHTML = `${date.toDateString()}`;
-    }
+    return '<input type="checkbox" disabled=true>';
 }
+
+function data_to_feature(data) {
+    return {type: "Feature", properties: data, geometry: data['geometry']};
+}
+
+function update_fire_database_table() {
+    let fire_database_datatable = new DataTable('#fire-database-table', {
+        destroy: true,
+        lengthChange: false,
+        data: db_array,
+        deferRender: true,
+        columns: [
+            {data: 'fire_type', title: 'F'},
+            {data: 'confidence', title: 'C'},
+            {data: 'is_new', title: 'N'},
+            {data: 'is_active', title: 'CA'},
+            {data: 'biome', title: 'AB'},
+            {data: 'protected', title: 'P'},
+            {data: 'start_doy', title: 'FD'},
+            {data: 'end_doy', title: 'LD'},
+            {data: 'size', title: 'S'},
+            {data: 'progression', title: 'Prog'},
+            {data: 'fire_count', title: '#'},
+            {data: 'frp', title: 'FRP'},
+            {data: 'persistence', title: 'Pers'},
+            {data: 'biomass', title: 'BM'},
+            {data: 'tree_cover', title: 'TC'},
+            {data: 'deforestation', title: 'D'},
+        ],
+        dom: 'lrti',
+        scrollCollapse: true,
+        scroller: true,
+        scrollX: true,
+        scrollY: $("#fire-database").height() - 125,
+        order: [[1, 'desc']],
+        columnDefs: [{
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<div class=' + get_type_class(row['fire_type']) + '></div>';
+            },
+        }, {
+            "targets": 2,
+            "render": function (data, type, row) {
+                return get_checkbox(is_new(data_to_feature(row)));
+            }
+        }, {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return get_checkbox(is_active(data_to_feature(row)));
+            }
+        }, {
+            "targets": 4,
+            "render": function (data, type, row) {
+                return get_checkbox(in_biome(data_to_feature(row)));
+            }
+        }, {
+            "targets": 5,
+            "render": function (data, type, row) {
+                return get_checkbox(is_protected(data_to_feature(row)));
+            }
+        }, {
+            "targets": 6,
+            "render": function (data, type, row) {
+                let date = new Date(run_year, 0, row['start_doy']);
+                return `${date.toISOString().substring(5,10)}`;
+            }
+        }, {
+            "targets": 7,
+            "render": function (data, type, row) {
+                let date = new Date(run_year, 0, row['end_doy']);
+                return `${date.toISOString().substring(5,10)}`;
+            }
+        }]
+    });
+
+    fire_database_datatable.on('click', 'tr', function (e) {
+        let data = fire_database_datatable.row(e.target.closest('tr')).data();
+
+        center_map_on_feature(data_to_feature(data));
+    });
+}
+
+
+function update_largest_fires() {
+    let fires_datatable = new DataTable('#fires-table', {
+        destroy: true,
+        lengthChange: false,
+        data: db_array,
+        deferRender: true,
+        columns: [
+            {data: 'fire_type', title: 'Type'},
+            {data: 'size', title: 'Size'},
+            {data: 'start_doy', title: 'Start Date'}
+        ],
+        dom: 'lrti',
+        scrollCollapse: true,
+        scroller: true,
+        scrollY: $("#fire-alerts").height() * 40 / 100,
+        order: [[1, 'desc']],
+        columnDefs: [{
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<div class=' + get_type_class(row['fire_type']) + '></div>';
+            },
+        }, {
+            "targets": 2,
+            "render": function (data, type, row) {
+                let date = new Date(run_year, 0, row['start_doy']);
+                return `${date.toDateString()}`;
+            }
+        }]
+    });
+
+    fires_datatable.on('click', 'tr', function (e) {
+        let data = fires_datatable.row(e.target.closest('tr')).data();
+
+        center_map_on_feature(data_to_feature(data));
+    });
+}
+
 
 function update_protected_area_alert() {
-    let table = document.getElementById("protected-table");
-    let sorted = filtered_fire_data.sort(sort_by_size);
-    let sorted_and_filtered = sorted.filter(is_active).filter(is_protected);
+    protected_datatable = new DataTable('#protected-table', {
+        destroy: true,
+        lengthChange: false,
+        data: db_array,
+        deferRender: true,
+        columns: [
+            {data: 'fire_type', title: 'Type'},
+            {data: 'size', title: 'Size'},
+            {data: 'start_doy', title: 'Start Date'}
+        ],
+        dom: 'lrti',
+        scrollCollapse: true,
+        scroller: true,
+        scrollY: $("#fire-alerts").height() * 40 / 100,
+        order: [[1, 'desc']],
+        columnDefs: [{
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<div class=' + get_type_class(row['fire_type']) + '></div>';
+            },
+        }, {
+            "targets": 2,
+            "render": function (data, type, row) {
+                let date = new Date(run_year, 0, row['start_doy']);
+                return `${date.toDateString()}`;
+            }
+        }]
+    });
 
-    if (table.rows.length > 1) {
-        clear_table("protected-table");
-    }
+    protected_datatable.on('click', 'tr', function (e) {
+        let data = protected_datatable.row(e.target.closest('tr')).data();
 
-    for (let i = Math.min(sorted_and_filtered.length - 1, 9); i >= 0; i--) {
-        let cur_feature = sorted_and_filtered[i];
-        let row = table.insertRow(1);
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        row.style.cursor = 'pointer';
-        row.id = cur_feature.properties.cluster_id;
-        row.onclick = function () {
-            let centroid = turf.centroid(cur_feature);
-            let lon = centroid.geometry.coordinates[0];
-            let lat = centroid.geometry.coordinates[1];
-            map.setView([lat, lon], 13);
-        };
-        let fire_type_square = document.createElement("div")
-        fire_type_square.setAttribute('class', get_type_class(cur_feature));
-        cell1.appendChild(fire_type_square);
-        cell2.innerHTML = cur_feature.properties.size + ' km<sup>2</sup>';
-        let date = new Date(run_year, 0, cur_feature.properties.start_doy);
-        cell3.innerHTML = `${date.toDateString()}`;
-    }
-}
-
-
-function filter_user_selections(feature) {
-    let active = document.getElementById('active');
-    let only_protected = document.getElementById('protected');
-    let biome = document.getElementById('biome');
-    let country = document.getElementById('selected_country').value;
-    let state = document.getElementById('selected_state').value;
-    let start_date = new Date(document.getElementById('date_input_start').value.replace(/-/g, '\/'));
-    let end_date = new Date(document.getElementById('date_input_end').value.replace(/-/g, '\/'));
-    let start_doy = new Date(run_year, 0, feature.properties.start_doy);
-    let end_doy = new Date(run_year, 0, feature.properties.end_doy);
-    let selected_fire_type = document.getElementById('selected_fire_type').value
-    let feature_fire_type = feature.properties.fire_type;
-    let feature_country = feature.properties.country;
-    let feature_state = feature.properties.state;
-    if (active.checked && !is_active(feature)) {
-        return false;
-    }
-    if (only_protected.checked && !is_protected(feature)) {
-        return false;
-    }
-    if (biome.checked && !in_biome(feature)) {
-        return false;
-    }
-    if (!((start_date <= start_doy && end_date >= end_doy) ||
-        (start_date >= start_doy && end_date >= end_doy && end_doy >= start_date) ||
-        (start_date <= start_doy && end_date <= end_doy && start_doy <= end_date))) {
-        return false;
-    }
-    if (selected_fire_type != 0 && feature_fire_type != selected_fire_type) {
-        return false;
-    }
-    if (country != 0 && feature_country != country) {
-        return false;
-    }
-    if (state != 0 && feature_state != state) {
-        return false;
-    }
-
-    return true;
+        center_map_on_feature(data_to_feature(data));
+    });
 }
 
 function update_chart() {
@@ -304,6 +360,7 @@ function set_last_filters() {
     let state_select = document.getElementById('selected_state').value;
     let protected_area = document.getElementById("protected").checked;
     let biome = document.getElementById("biome").checked;
+    let new_fire = document.getElementById("new").checked;
     let active_fire = document.getElementById("active").checked;
     let start_doy = document.getElementById('date_input_start').value;
     let end_doy = document.getElementById('date_input_end').value;
@@ -317,11 +374,12 @@ function set_last_filters() {
     last_filters_loaded['end_doy'] = end_doy;
     last_filters_loaded['fire_type'] = fire_type;
     last_filters_loaded['biome'] = biome;
+    last_filters_loaded['new'] = new_fire;
 
     toggle_apply();
 }
 
-function click_zoom_to_feature(feature, layer){
+function click_zoom_to_feature(feature, layer) {
     layer.on('click', function (e) {
         center_map_on_feature(e.target.feature);
     })
@@ -330,16 +388,13 @@ function click_zoom_to_feature(feature, layer){
 function update_displayed_data() {
     let load_layer = document.getElementById('loader');
     document.getElementById("apply").disabled = true;
-    document.getElementById('load_message').innerHTML = "Filtering Data";
+    document.getElementById("load_message").innerHTML = "Filtering Data";
     load_layer.style.display = 'flex';
 
     setTimeout(() => {
         if (fire_data_layer != undefined) {
             map.removeLayer(fire_data_layer);
         }
-
-        filtered_fire_data = fire_data.filter(filter_user_selections)
-        set_last_filters();
 
         document.getElementById('load_message').innerHTML = "Updating Statistics";
 
@@ -350,7 +405,7 @@ function update_displayed_data() {
 
         document.getElementById('load_message').innerHTML = "Adding Layer to Map";
 
-        fire_data_layer = L.geoJSON(filtered_fire_data, {
+        fire_data_layer = L.geoJSON(fire_data, {
             style: function (feature) {
                 switch (feature.properties.fire_type) {
                     case '1':
@@ -407,6 +462,8 @@ function update_displayed_data() {
 
         load_layer.style.display = 'none';
     }, 100);
+
+    $('#slideOutTab').click();
 }
 
 
@@ -422,25 +479,76 @@ function download_zip() {
 }
 
 function get_batches() {
-  let year = run_year;
-  let month = run_month;
-  let day = run_day;
+    let year = run_year;
+    let month = run_month;
+    let day = run_day;
 
-  let current_date = new Date(year, month - 1, day);
-  let day_of_year = Math.ceil((current_date - new Date(year, 0, 1)) / (1000 * 60 * 60 * 24)) + 1;
+    let current_date = new Date(year, month - 1, day);
+    let day_of_year = Math.ceil((current_date - new Date(year, 0, 1)) / (1000 * 60 * 60 * 24)) + 1;
 
-  let stride = 30;
-  let ranges = [];
-  for (let i = 0; i < Math.floor(day_of_year / stride); i++) {
-    const start_day = i * stride + 1;
-    const end_day = (i + 1) * stride;
-    ranges.push([start_day, end_day]);
-  }
+    let stride = 30;
+    let ranges = [];
+    for (let i = 0; i < Math.floor(day_of_year / stride); i++) {
+        const start_day = i * stride + 1;
+        const end_day = (i + 1) * stride;
+        ranges.push([start_day, end_day]);
+    }
 
-  if (day_of_year % stride !== 0) {
-    ranges.push([Math.floor(day_of_year / stride) * stride + 1, day_of_year]);
-  }
-  return ranges;
+    if (day_of_year % stride !== 0) {
+        ranges.push([Math.floor(day_of_year / stride) * stride + 1, day_of_year]);
+    }
+    return ranges;
+}
+
+function get_filter_states() {
+    let active = document.getElementById('active').checked;
+    let only_protected = document.getElementById('protected').checked;
+    let biome = document.getElementById('biome').checked;
+    let new_fire = document.getElementById('new').checked;
+    let country = document.getElementById('selected_country').value;
+    let state = document.getElementById('selected_state').value;
+    let start_date = document.getElementById('date_input_start').value.replace(/-/g, '\/');
+    let end_date = document.getElementById('date_input_end').value.replace(/-/g, '\/');
+    let fire_type = document.getElementById('selected_fire_type').value
+    let filter_object = {
+        "active": active,
+        "protected": only_protected,
+        "biome": biome,
+        "new_fire": new_fire,
+        "country": country,
+        "state": state,
+        "start_date": start_date,
+        "end_date": end_date,
+        "fire_type": fire_type,
+    };
+    return filter_object;
+}
+
+function batch_to_xhr(batch) {
+    let start_doy = batch[0];
+    let end_doy = batch[1];
+    let options = {
+        "fire_table": selected_fire_table,
+        "range_start": start_doy,
+        "range_end": end_doy,
+        ...(get_filter_states())
+    }
+    return ajax_call_with_progress("get-fire-events", options);
+}
+
+function extract_data(xhr_result) {
+    return xhr_result[0]['data'];
+}
+
+function extract_properties(feature) {
+    let obj = feature.properties;
+    obj['geometry'] = feature.geometry;
+    return obj;
+}
+
+function update_db_array() {
+    db_array = fire_data.map(extract_properties);
+    update_fire_database_table();
 }
 
 function set_fire_data() {
@@ -449,21 +557,18 @@ function set_fire_data() {
     document.getElementById('load_message').innerHTML = "Loading Fire Data";
     load_layer.style.display = 'flex';
 
-    let fire_data_script = document.createElement('script');
-    fire_data_script.setAttribute('src', `/static/js/${selected_fire_table}.js`);
-    fire_data_script.setAttribute('type', 'text/javascript');
-    fire_data_script.setAttribute('async', true);
+    let batches = get_batches();
+    let batches_xhr = batches.map(batch_to_xhr);
+    $.when(...batches_xhr).then(function () {
+        results = [...arguments]
+        fire_data = results.map(extract_data).flat();
 
-    document.body.appendChild(fire_data_script);
+        update_db_array();
+        update_displayed_data();
+        update_chart();
+    });
 
-    fire_data_script.addEventListener('load', () => {
-        console.log(fire_data)
-        setTimeout(() => {
-            update_displayed_data();
-        }, 100);
-    })
-
-    update_chart();
+    set_last_filters();
 }
 
 
@@ -503,7 +608,7 @@ function clear_selector(id) {
 
 function clear_table(id) {
     let selector = document.getElementById(id);
-    for (let i = 1; i <= Math.min(10, selector.rows.length); i++) {
+    for (let i = 1; i <= selector.rows.length; i++) {
         selector.deleteRow(1);
     }
 }
@@ -542,7 +647,6 @@ function state_selector_change() {
 
 
 function set_states() {
-    let select = document.getElementById('selected_state');
     const xhr = ajax_call("get-states", {});
     xhr.done(function (result) {
         states_data = result['data'];
@@ -572,7 +676,6 @@ function country_selector_change() {
 
 
 function set_countries() {
-    let select = document.getElementById('selected_country');
     const xhr = ajax_call("get-countries", {});
     xhr.done(function (result) {
         country_data = result['data'];
@@ -608,6 +711,31 @@ function set_fire_tables() {
 
         set_fire_data();
     });
+}
+
+
+function initialize_dataTable() {
+    $.fn.dataTable.ext.search.push(
+        function (settings, searchData, index, rowData, counter) {
+            if (settings.nTable.id === 'fire-database-table') {
+                return true;
+            }
+
+            if (settings.nTable.id === 'fires-table') {
+                let active_label = rowData['is_active'];
+                if (active_label === "1") {
+                    return true;
+                }
+                return false;
+            }
+
+            let protected_label = rowData['protected'];
+            if (protected_label === 1) {
+                return true;
+            }
+
+            return false;
+        });
 }
 
 
@@ -687,6 +815,7 @@ $(function () {
         }
     };
 
+    initialize_dataTable();
+
     set_fire_tables();
-    $('#slideOutTab').click();
 });
