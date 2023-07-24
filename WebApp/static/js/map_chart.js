@@ -196,7 +196,7 @@ function format_detection_summary(feature) {
                    <br>`
 }
 
-function format_fire_summary(feature) {
+function format_fire_summary(feature, as_sentence) {
     let is_active = feature.properties.is_active;
     let is_new = feature.properties.is_new;
     let size = feature.properties.size;
@@ -212,6 +212,20 @@ function format_fire_summary(feature) {
     let persistence = feature.properties.persistence;
     let progression = feature.properties.progression;
     let biome = feature.properties.biome;
+
+    if(as_sentence) {
+        return `The fire you have selected is classified as ${get_type_text(feature)} (Confidence: ${confidence}). 
+        It was first detected ${(new Date(run_year, 0, start_doy)).toDateString()}, with activity as recently as 
+        ${(new Date(run_year, 0, end_doy)).toDateString()}. There have been ${fire_count} detections creating a 
+        fire-affected area of ${size} sq km. On average, each detection has an intensity of ${frp} MW, persisting 
+        ${persistence} days with a progression fraction of ${progression}. 
+        ${is_new == 1 ? 'This fire is newly detected. ' : ''}This fire is${is_active == 1 ? '' : ' Not'} currently 
+        active, ${biome == 1 ? 'affects' : 'does not affect'} the Amazon Biome, and was 
+        ${protected_area == 1 ? '' : 'not '}detected in a protected area. Within the fire perimeter, historic 
+        deforestation as of ${run_year - 1} was ${deforestation} (PRODES). There was ${tree_cover}% tree cover in 
+        ${run_year - 1} (Hansen et al.), and prior to the fire contained ${biomass} ton ha<sup>-1</sup> of biomass 
+        (Avitabili 2016).`
+    }
 
     return `<label>Fire Statistics</label><br><br>
                    Fire Type: ${get_type_text(feature)} (Confidence: ${confidence})<br>
@@ -306,11 +320,9 @@ function update_detections_table() {
 }
 
 function update_fire_summary(feature) {
-    let split_summary = format_fire_summary(feature).split(/\r?\n/);
+    let summary = format_fire_summary(feature, true);
 
-    document.getElementById("selected-fire-statistics").innerHTML = split_summary.slice(0,10).join('');
-    document.getElementById("selected-fire-status").innerHTML = split_summary.slice(10,16).join('');
-    document.getElementById("selected-fire-perimeter").innerHTML = split_summary.slice(16,20).join('');
+    document.getElementById("selected-fire-statistics").innerHTML = summary;
 }
 
 function update_detections_array() {
@@ -606,7 +618,7 @@ function add_fire_data_to_map() {
         style: get_fire_type_color,
         onEachFeature: click_feature
     }).bindTooltip(function (layer) {
-        return format_fire_summary(layer.feature);
+        return format_fire_summary(layer.feature, false);
     }, { className: "zTop" }).addTo(map);
 }
 
