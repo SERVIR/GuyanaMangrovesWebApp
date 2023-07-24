@@ -210,9 +210,7 @@ def get_fire_events(request):
         return JsonResponse(json_obj)
 
 @csrf_exempt
-def get_daily_totals_by_type(cur, type, start, end, fire_table, country, state):
-    state_str = "" if state == 0 else "and state = '{}'".format(state)
-    country_str = "" if country == 0 else "and country = '{}'".format(country)
+def get_daily_totals_by_type(cur, start, end, fire_table, filters):
     sql = """WITH date_range AS (
       SELECT generate_series({start}, {end}) AS day
     )
@@ -220,9 +218,9 @@ def get_daily_totals_by_type(cur, type, start, end, fire_table, country, state):
     FROM (
       SELECT day, COUNT(*) AS events_count
       FROM date_range
-      LEFT JOIN fire_data.{table} ON day BETWEEN start_doy AND last_doy and fire_type = '{type}'{state}{country}
+      LEFT JOIN fire_data.{table} ON day BETWEEN start_doy AND last_doy+10{filters}
       GROUP BY day
-    ) AS subquery;""".format(table=fire_table, start=start, end=end, type=type, state=state_str, country=country_str)
+    ) AS subquery;""".format(table=fire_table, start=start, end=end, filters=filters)
 
     cur.execute(sql)
     data = cur.fetchall()
@@ -231,17 +229,12 @@ def get_daily_totals_by_type(cur, type, start, end, fire_table, country, state):
     return result
 
 @csrf_exempt
-def get_fire_events_chart(request):
+def get_chart_dates(request):
     json_obj = {}
 
-    fire_table = request.POST.get("fire_table")
     start_doy = int(datetime.datetime.strptime(request.POST.get("start_doy"), "%Y/%m/%d").date().strftime('%j'))
     end_doy = int(datetime.datetime.strptime(request.POST.get("end_doy"), "%Y/%m/%d").date().strftime('%j'))
     year = int(request.POST.get("year"))
-    state = int(request.POST.get("state"))
-    country = int(request.POST.get("country"))
-
-    result = {}
 
     date_list = []
     start_date = datetime.datetime(year, 1, 1) + datetime.timedelta(start_doy - 1)
@@ -252,20 +245,44 @@ def get_fire_events_chart(request):
         date_list.append(formatted_date)
         start_date += datetime.timedelta(days=1)
 
-    result['dates'] = date_list
+    json_obj['data'] = date_list
+
+    return JsonResponse(json_obj)
+
+@csrf_exempt
+def get_fire_events_chart(request):
+    json_obj = {}
+
+    fire_table = request.POST.get("fire_table")
+    active = str_to_bool(request.POST.get("active"))
+    protected = str_to_bool(request.POST.get("protected"))
+    biome = str_to_bool(request.POST.get("biome"))
+    new = str_to_bool(request.POST.get("new_fire"))
+    fire_type = int(request.POST.get("fire_type"))
+    start_doy = int(datetime.datetime.strptime(request.POST.get("start_date"), "%Y/%m/%d").date().strftime('%j'))
+    end_doy = int(datetime.datetime.strptime(request.POST.get("end_date"), "%Y/%m/%d").date().strftime('%j'))
+    state = int(request.POST.get("state"))
+    country = int(request.POST.get("country"))
+
+    filters = ""
+    if biome:
+        filters += " AND biome = '1'"
+    if protected:
+        filters += " AND protected = 1"
+    if country:
+        filters += " AND country = {}".format(country)
+    if state:
+        filters += " AND state = {}".format(state)
+    if fire_type:
+        filters += " AND fire_type = {}".format(fire_type)
 
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
         cur = conn.cursor()
 
-        result['savannah'] = get_daily_totals_by_type(cur, 1, start_doy, end_doy, fire_table, country, state)
-        result['agriculture'] = get_daily_totals_by_type(cur, 2, start_doy, end_doy, fire_table, country, state)
-        result['understory'] = get_daily_totals_by_type(cur, 3, start_doy, end_doy, fire_table, country, state)
-        result['deforestation'] = get_daily_totals_by_type(cur, 4, start_doy, end_doy, fire_table, country, state)
+        json_obj["data"] = get_daily_totals_by_type(cur, start_doy, end_doy, fire_table, filters)
 
         conn.close()
-
-        json_obj["data"] = result
 
         return JsonResponse(json_obj)
 

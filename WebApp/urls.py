@@ -21,6 +21,7 @@ urlpatterns = [
     path('dashboard/get-states/', api_handlers.get_states, name='get-states'),
     path('dashboard/get-countries/', api_handlers.get_countries, name='get-countries'),
     path('dashboard/get-fire-events-zip/', api_handlers.get_fire_events_zip, name='get-fire-events-zip'),
+    path('dashboard/get-chart-dates/', api_handlers.get_chart_dates, name='get-chart-dates'),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

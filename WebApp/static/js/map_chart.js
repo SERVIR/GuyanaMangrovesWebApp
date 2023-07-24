@@ -1,5 +1,5 @@
 let map;
-let chart_data;
+let chart_data = {};
 let fire_data;
 let fire_data_layer;
 let detections_data;
@@ -216,12 +216,12 @@ function format_fire_summary(feature, as_sentence) {
     if(as_sentence) {
         return `The fire you have selected is classified as ${get_type_text(feature)} (Confidence: ${confidence}). 
         It was first detected ${(new Date(run_year, 0, start_doy)).toDateString()}, with activity as recently as 
-        ${(new Date(run_year, 0, end_doy)).toDateString()}. There have been ${fire_count} detections creating a 
+        ${(new Date(run_year, 0, end_doy)).toDateString()}. <br><br> There have been ${fire_count} detections creating a 
         fire-affected area of ${size} sq km. On average, each detection has an intensity of ${frp} MW, persisting 
         ${persistence} days with a progression fraction of ${progression}. 
-        ${is_new == 1 ? 'This fire is newly detected. ' : ''}This fire is${is_active == 1 ? '' : ' Not'} currently 
-        active, ${biome == 1 ? 'affects' : 'does not affect'} the Amazon Biome, and was 
-        ${protected_area == 1 ? '' : 'not '}detected in a protected area. Within the fire perimeter, historic 
+        This fire is${is_active == 1 ? '' : ' Not'} currently 
+        active${is_new == 1 ? ', newly detected, ' : ''}, ${biome == 1 ? 'affects' : 'does not affect'} the Amazon Biome, and was 
+        ${protected_area == 1 ? '' : 'not '}detected in a protected area.<br><br> Within the fire perimeter, historic 
         deforestation as of ${run_year - 1} was ${deforestation} (PRODES). There was ${tree_cover}% tree cover in 
         ${run_year - 1} (Hansen et al.), and prior to the fire contained ${biomass} ton ha<sup>-1</sup> of biomass 
         (Avitabili 2016).`
@@ -463,7 +463,7 @@ function update_largest_fires() {
         dom: 'lrti',
         scrollCollapse: true,
         scroller: true,
-        scrollY: $("#fire-alerts").height() * 40 / 100,
+        scrollY: $("#fire-alerts").height() * 35 / 100,
         order: [[1, 'desc']],
         createdRow: function (row, data, dataIndex) {
             $(row).on('click', function (e) {
@@ -500,7 +500,7 @@ function update_protected_area_alert() {
         dom: 'lrti',
         scrollCollapse: true,
         scroller: true,
-        scrollY: $("#fire-alerts").height() * 40 / 100,
+        scrollY: $("#fire-alerts").height() * 35 / 100,
         order: [[1, 'desc']],
         createdRow: function (row, data, dataIndex) {
             $(row).on('click', function (e) {
@@ -725,19 +725,30 @@ function update_db_array() {
     db_array = fire_data.map(extract_properties);
 }
 
-function get_charts_xhr() {
-    let state = document.getElementById('selected_state').value
-    let country = document.getElementById('selected_country').value
+function get_charts_xhr(fire_type) {
     let context = {
-        "start_doy": document.getElementById('date_input_start').value.replace(/-/g, '\/'),
-        "end_doy": document.getElementById('date_input_end').value.replace(/-/g, '\/'),
-        "year": run_year,
         "fire_table": selected_fire_table,
-        "state": state,
-        "country": country
+        ...(get_filter_states())
     };
 
-    let xhr = ajax_call("get-fire-events-chart", context);
+    context['fire_type'] = fire_type
+
+    let xhr = ajax_call_with_progress("get-fire-events-chart", context);
+    return xhr;
+}
+
+function get_chart_dates_xhr() {
+    let start_date = document.getElementById('date_input_start').value.replace(/-/g, '\/');
+    let end_date = document.getElementById('date_input_end').value.replace(/-/g, '\/');
+
+    let context = {
+        "fire_table": selected_fire_table,
+        "year": run_year,
+        "start_doy": start_date,
+        "end_doy": end_date
+    };
+
+    let xhr = ajax_call_with_progress("get-chart-dates", context);
     return xhr;
 }
 
@@ -750,11 +761,19 @@ function set_fire_data() {
     let batches = get_batches();
     let batches_xhr = batches.map(batch_to_xhr);
 
-    batches_xhr.push(get_charts_xhr())
+    batches_xhr.push(get_chart_dates_xhr())
+    batches_xhr.push(get_charts_xhr("1"))
+    batches_xhr.push(get_charts_xhr("2"))
+    batches_xhr.push(get_charts_xhr("3"))
+    batches_xhr.push(get_charts_xhr("4"))
     $.when(...batches_xhr).then(function () {
         results = [...arguments]
 
-        chart_data = extract_data(results.pop())
+        chart_data['deforestation'] = extract_data(results.pop())
+        chart_data['understory'] = extract_data(results.pop())
+        chart_data['agriculture'] = extract_data(results.pop())
+        chart_data['savannah'] = extract_data(results.pop())
+        chart_data['dates'] = extract_data(results.pop())
         fire_data = results.map(extract_data).flat();
 
         update_db_array();

@@ -211,6 +211,7 @@ a:hover {
     flex-direction: column;
     border: 1px solid #e3e6f0;
     border-radius: 0.35rem;
+    overflow: hidden;
 }
 
 button[disabled] {
@@ -223,11 +224,11 @@ button[disabled] {
     flex-direction: column;
     border: 1px solid #e3e6f0;
     border-radius: 0.35rem;
+    overflow: hidden;
 }
 
 #largest-fires-div, #protected-fires-div {
     flex-grow: 1;
-    overflow: scroll;
 }
 
 #largest-fires-table-header, #protected-fires-table-header {
