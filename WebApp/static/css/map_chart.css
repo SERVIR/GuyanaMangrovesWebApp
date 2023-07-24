@@ -323,15 +323,10 @@ button[disabled] {
 }
 
 #download_container{
-    position: absolute;
     display: flex;
-    flex-direction: column;
-    left: 44px;
-    top: 126px;
-    z-index: 998;
-    color: gray;
-    width: auto !important;
-    gap: 10px;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
 }
 
 #data-explorer-tabs{

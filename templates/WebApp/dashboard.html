@@ -61,11 +61,6 @@
     <div class="row">
         <div id="map_chart" style="height:calc(100vh - 166px);">
         </div>
-        <div id="download_container">
-            <button type="button" class="btn btn-light" onclick="download_geojson()">Download GeoJSON</button>
-            <button type="button" class="btn btn-light" onclick="download_zip()">Download Zipped Shapefiles</button>
-            <a id="download_link" style="display: none" download></a>
-        </div>
 
         <div id="slideOut">
             <!--   // Tab -->
@@ -208,6 +203,11 @@
                                     </button>
                                 </div>
                                 <table id="fire-database-table" class="table table-responsive-sm compact"></table>
+                                <div id="download_container">
+                                    <button type="button" class="btn btn-outline-primary" onclick="download_geojson()">Filtered Fires GeoJSON</button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="download_zip()">Annual Fires Shapefiles</button>
+                                    <a id="download_link" style="display: none" download></a>
+                                </div>
                             </div>
                             <!-- Tab pane: Legends -->
                             <!-- This tab is used to display legend for the selected layer(s) -->
