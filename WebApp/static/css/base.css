@@ -36,3 +36,7 @@
 .modified-logo {
     padding: 20px 0px 20px 0px;
 }
+
+.nav-item {
+    white-space: nowrap;
+}

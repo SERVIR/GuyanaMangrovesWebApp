@@ -10,18 +10,14 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('methodology/', views.home, name='methodology'),
     path('about/', views.about, name='about'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('map/', views.map, name='map'),
     path('login/', views.login, name='login'),
     path('feedback/', views.feedback, name='feedback'),
 
-    path('dashboard/get-fire-events/', api_handlers.get_fire_events, name='get-fire-events'),
-    path('dashboard/get-fire-detections/', api_handlers.get_fire_detections, name='get-fire-detections'),
-    path('dashboard/get-fire-tables/', api_handlers.get_fire_tables, name='get-fire-events'),
-    path('dashboard/get-fire-events-chart/', api_handlers.get_fire_events_chart, name='get-fire-events-chart'),
-    path('dashboard/get-states/', api_handlers.get_states, name='get-states'),
-    path('dashboard/get-countries/', api_handlers.get_countries, name='get-countries'),
-    path('dashboard/get-fire-events-zip/', api_handlers.get_fire_events_zip, name='get-fire-events-zip'),
-    path('dashboard/get-chart-dates/', api_handlers.get_chart_dates, name='get-chart-dates'),
+    path('map/get-extent-layer/', api_handlers.get_mangrove_layer, name='get-extent-layer'),
+    path('map/get-change-layer/', api_handlers.get_mangrove_layer, name='get-change-layer'),
+    path('map/get-impact-layer/', api_handlers.get_mangrove_layer, name='get-impact-layer'),
+    path('map/get-available-years/', api_handlers.get_available_years, name='get-available-years')
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

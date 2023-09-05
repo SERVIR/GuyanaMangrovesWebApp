@@ -1,6 +1,6 @@
 {% extends "WebApp/app_base.html" %}
 {% load static %}
-{% block title %}Amazon Fire Dashboard{% endblock %}
+{% block title %}Guyana Mangroves{% endblock %}
 {% block script %}
     <!-- Custom styles-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -24,7 +24,7 @@
                     </div>
                     <div class="card-body">
                         <div class="text-left text-dark">
-                            <p>This application serves as a user interface to interact with fire data in the Amazon region. Analysis is conducted starting from the first day of the calendar year, using a predetermined classification method.</p>
+                            <p>This application serves as a user interface to interact with mangrove data in Guyana.</p>
                         </div>
                     </div>
                 </div>
@@ -39,24 +39,6 @@
                         <h6 class="m-0 font-weight-bold text-primary">Team members</h6>
                     </div>
                     <div class="card-body text-center">
-                                <span onclick="open_more_info(this)"
-                                      class="p-3 d-inline-block text-decoration-none pointer"><img
-                                        src="{% static 'images/teammembers/morton.png' %}" alt="Douglas Morton"
-                                        class="team-member">
-                                    <p>(SERVIR AST) Douglas Morton</p>
-                                    <span style="display:none;" class="member_title">
-                                        Directed of the science portion of this project.
-                                    </span>
-                                </span>
-                        <span onclick="open_more_info(this)"
-                              class="p-3 d-inline-block text-decoration-none pointer"><img
-                                src="{% static 'images/teammembers/NielsAndela.jpeg' %}" alt="img1"
-                                class="team-member">
-                                                    <p>(SERVIR AST) Niels Andela</p>
-                                                    <span style="display:none;" class="member_title">
-                                                        Co-PI
-                                                    </span>
-                                        </span>
                         <span onclick="open_more_info(this)"
                               class="p-3 d-inline-block text-decoration-none pointer"><img
                                 src="{% static 'images/teammembers/AlexGoberna.jpg' %}" alt="img1"
@@ -86,8 +68,6 @@
                                                         Software Engineering Lead
                                                     </span>
                                         </span>
-
-
                     </div>
                 </div>
             </div>
@@ -122,8 +102,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">Logos</h6>
                 </div>
                 <div class="card-body text-center">
-                    <a href="" class="p-3"><img class="org-logo modified-logo" src="{% static 'images/logos/uci_logo.png' %}"></a>
-                    <a href="" class="p-3"><img class="org-logo modified-logo" src="{% static 'images/logos/cardiff_logo.png' %}"></a>
                     <a href="" class="p-3"><img class="org-logo" src="{% static 'images/logos/AMZ_Alliance.jpg' %}"></a>
                 </div>
             </div>

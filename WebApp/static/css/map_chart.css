@@ -8,8 +8,6 @@ html {
     height: calc(100vh - 166px);
     /*width:-webkit-fill-available;*/
     z-index: 9;
-    margin-left: 10px;
-
 }
 
 #chart-container_new {
@@ -388,4 +386,114 @@ tr {
 
 .dataTables_scrollBody, .dataTables_scrollHead {
     width: auto;
+}
+
+.layer-container, #compare-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.labeled-button {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.layer-selections {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px 10px;
+}
+
+h6 {
+    color: gray;
+}
+
+.year-selector, .region-selector, .change-selector {
+    width: 110px;
+}
+.location-selector {
+    width: 300px;
+}
+
+label {
+    margin-right: 5px;
+}
+
+#current-layers-list, #available-layers-list, #current-layers-list_wrapper, #available-layers-list_wrapper {
+    width: 100%;
+}
+
+.remove-indicator, .add-indicator{
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remove-indicator {
+    background-color: red;
+}
+
+.add-indicator {
+    background-color: green;
+}
+
+
+
+.dataTables_scrollBody, .dataTables_scrollHead {
+    width: auto;
+}
+
+.form-group{
+    position: relative;
+}
+.form-group>label{
+  position: absolute;
+  top: 0.2ex;
+  z-index: 1;
+  left: 2em;
+  background-color: white;
+  padding: 0 5px;
+    font-size: 0.75rem;
+}
+
+.form-group>input, .form-group>select{
+  border: 1px solid rgb(209, 211, 226);;
+  border-radius: 6px;
+  position: relative;
+  width: 200px;
+  margin: 10px;
+}
+
+.toggle.btn {
+    border: 1px solid rgb(209, 211, 226);
+}
+
+.toggle-row {
+    width: 50%;
+    align-items: center;
+}
+
+.toggle-row>label, .layer-container>label {
+    margin-right: unset;
+    margin: unset;
+}
+
+.mb-spaced {
+    margin-bottom: 1rem !important;
+}
+
+.leaflet-sbs-range {
+    background: none !important;
+    width: 100% !important;
 }

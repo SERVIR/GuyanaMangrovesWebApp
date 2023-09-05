@@ -1,0 +1,171 @@
+{% extends "WebApp/app_base.html" %}
+
+{% load static %}
+
+{% block title %}Guyana Mangroves{% endblock %}
+{% block script %}
+    <!-- Leaflet-->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+          integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"/>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static '/css/geosearch.css' %}"/>
+    <link href="{% static '/css/map_chart.css' %}" rel="stylesheet"/>
+    <link href="{% static '/css/L.Control.Opacity.css' %}" rel="stylesheet"/>
+    <link href="{% static '/css/layout.css' %}" rel="stylesheet"/>
+    <link href="{% static '/css/range.css' %}" rel="stylesheet"/>
+
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+            integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+    <script src="https://unpkg.com/esri-leaflet@3.0.8/dist/esri-leaflet.js"
+            integrity="sha512-E0DKVahIg0p1UHR2Kf9NX7x7TUewJb30mxkxEm2qOYTVJObgsAGpEol9F6iK6oefCbkJiA4/i6fnTHzM6H1kEA=="
+            crossorigin=""></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.5/leaflet-search.src.js"
+            integrity="sha512-PDM7dpetuBcPp2fV/ZyCj9BGV8ybPchsrSzQqVZ3WoM8YcxEa2lAj0n1+4MCRzgsEROmVTwQXGw0IrXCCgH+/Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <script src="{% static '/js/L.Control.Opacity.js' %}"></script>
+    <script src="{% static '/js/leaflet-side-by-side.js' %}"></script>
+    <script src="{% static '/js/leaflet-providers.js' %}"></script>
+    <script src="{% static '/js/utils.js' %}"></script>
+    <script src="{% static '/js/basemaps.js' %}"></script>
+    <script src="{% static '/js/geosearch.umd.js' %}"></script>
+    <script src="{% static '/js/map_utils.js' %}"></script>
+    <script src="{% static '/js/map_chart.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="map_chart" style="height:calc(100vh - 166px);">
+    </div>
+    <div class="accordion" id="mc_tab_container">
+        <div id="loading_mc" style="display: none;">
+            <div class="spinner-border text-secondary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header d-flex" id="headingMC">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseMC" aria-expanded="true"
+                        aria-controls="collapseMC">
+                    Layers
+                </button>
+            </h2>
+            <div id="collapseMC" class="accordion-collapse collapse show"
+                 aria-labelledby="headingMC" data-bs-parent="#mc_tab_container">
+                <div class="accordion-body">
+                    <div id="mc_tabs">
+                        <div class="p-2 mt-3 outer-tabs">
+                            <ul class="m-0 nav nav-fill nav-justified nav-tabs" id="mc_tab_list"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="active nav-link p-0" id="layers-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#layers" type="button"
+                                            role="tab"
+                                            aria-controls="layers" aria-selected="true">
+                                        Data Layers
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link p-0" id="basemaps-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#basemaps" type="button"
+                                            role="tab"
+                                            aria-controls="basemaps"
+                                            aria-selected="false"> Basemaps
+                                    </button>
+                                </li>
+                            </ul>
+                            <!-- Tab pane: Layers -->
+                            <div class="border-grey bg-white tab-content">
+                                <div class="tab-pane active p-2 map-tab" id="layers"
+                                     role="tabpanel"
+                                     aria-labelledby="layers-tab">
+                                    {% block layerControls %}{% endblock %}
+                                </div>
+                                <!-- Tab pane: Basemaps -->
+                                <!-- This tab is used when there is a need to change basemaps. The basemaps used are present in basemaps.js -->
+                                <div class="tab-pane h-100 pt-2 map-tab" id="basemaps" role="tabpanel"
+                                     aria-labelledby="basemaps-tab">
+                                    <div class="h-100 text-center">
+                                        <div class=" pos d-block">
+                                            <div class="map-thumb">
+                                                <a id="darkgray" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/darkGray.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Dark Gray Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="osm" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/osm.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Open Street Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="topo" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/topo.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Open Topography Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="gsatellite" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/gsatellite.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Google Satellite Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="satellite" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/satellite.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Satellite Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="terrain" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/terrain.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="Terrain Map">
+                                                </a>
+                                            </div>
+                                            <div class="map-thumb">
+                                                <a id="delorme" href="#"
+                                                   onclick="add_basemap(this.id);"><img
+                                                        src="{% static 'images/basemaps/delorme.png' %}"
+                                                        alt="img1" class="img-thumbnail" title="De Lorme Map">
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    {% include 'WebApp/map_fullscreen_about.html' %}
+{% endblock %}

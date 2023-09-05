@@ -1,0 +1,72 @@
+{% extends "WebApp/map_base.html" %}
+
+{% block layerControls %}
+    <input id="selected-schema" type="hidden" value="impact">
+    <div id="layer-container" class="layer-container">
+        <div class="d-flex" id="query-selector">
+            <div class="d-flex">
+                <div class="form-group">
+                    <label>Primary Year</label>
+                    <select name="selected_year" id="selected_year"
+                            class="form-control"
+                            onchange="redraw_map_layers()">
+                        <option value="0" selected="selected">Loading...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="form-group">
+                    <label>Region</label>
+                    <select name="selected_region" id="selected_region" class="form-control"
+                            onchange="redraw_map_layers()">
+                        <option value="0" selected="selected">All</option>
+                        <option value="1">Region 1</option>
+                        <option value="2">Region 2</option>
+                        <option value="3">Region 3</option>
+                        <option value="4">Region 4</option>
+                        <option value="5">Region 5</option>
+                        <option value="6">Region 6</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <label class="mb-spaced">Toggle Displayed Layers</label>
+        <div class="d-flex toggle-row">
+            <div class="checkbox">
+                <label>
+                    <input id="extent-selector" type="checkbox" data-toggle="toggle" checked onchange="toggle_extent()">
+                </label>
+            </div>
+            <label>Extent</label>
+        </div>
+        <div class="d-flex toggle-row">
+            <div class="checkbox">
+                <label>
+                    <input id="change-selector" type="checkbox" data-toggle="toggle" checked onchange="toggle_change()">
+                </label>
+            </div>
+            <label>Change</label>
+        </div>
+        <div class="d-flex toggle-row mb-spaced">
+            <div class="checkbox">
+                <label>
+                    <input id="impact-selector" type="checkbox" data-toggle="toggle" checked onchange="toggle_impact()">
+                </label>
+            </div>
+            <label>Restoration Impacts</label>
+        </div>
+        <label class="mb-spaced">Comparison Layer</label>
+        <div class="d-flex" id="comparison-selector">
+            <div class="d-flex">
+                <div class="form-group">
+                    <label>Comparison Year</label>
+                    <select name="comparison_year" id="comparison_year"
+                            class="form-control"
+                            onchange="redraw_map_layers()">
+                        <option value="0" selected="selected">None</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
