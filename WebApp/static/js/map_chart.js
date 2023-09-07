@@ -8,6 +8,8 @@ let comparison_gain_layer;
 let comparison_loss_layer;
 let comparison_impact_layer;
 let comparison_control;
+let selected_feature;
+let selected_feature_style;
 
 
 function add_option_by_id(selector, value, label) {
@@ -96,6 +98,23 @@ function filter_loss(feature){
 }
 
 
+function click_feature(feature, layer) {
+    layer.on('click', function (e) {
+        if(selected_feature != undefined) {
+            selected_feature.setStyle(selected_feature_style);
+        }
+        toggle_extent();
+        selected_feature = layer;
+        selected_feature_style = layer.options.style;
+        map.fitBounds(layer.getBounds());
+        layer.setStyle({
+            color: 'yellow'
+        });
+        selected_feature.bringToFront();
+    });
+}
+
+
 function toggle_extent(){
     let add = document.getElementById('extent-selector').checked;
     primary_extent_layer.remove();
@@ -153,12 +172,29 @@ function toggle_impact(){
 }
 
 
+function calculate_total(layer){
+    let total = 0;
+    console.log(layer);
+    layer.forEach(function (feature) {
+      total += feature.properties.area;
+    });
+    return total;
+}
+
+
 function redraw_map_layers(){
     clear_map_layers();
+    let loader = document.getElementById('loader');
+    let primary_label = document.getElementById('primary_year_indicator');
+    let comparison_label = document.getElementById('comparison_year_indicator');
+    let selected_year = document.getElementById('selected_year').value
     let layer_xhr_array = [];
+    loader.style.display = 'flex';
+    primary_label.innerHTML = `<h4>${selected_year}</h4>`;
+    comparison_label.style.display = 'none';
     let xhr_primary_extent = ajax_call("get-extent-layer", {
         'schema': "extent",
-        'layer': document.getElementById('selected_year').value
+        'layer': selected_year
     });
     xhr_primary_extent.done(function (result) {
         primary_extent_layer = L.geoJSON(result['data'].filter(filter_regions), {
@@ -169,9 +205,10 @@ function redraw_map_layers(){
                 color: 'green',  //Outline color
                 fillOpacity: 1,
             },
-            pane: 'left'
+            pane: 'left',
+            onEachFeature: click_feature
         }).bindPopup(function (layer) {
-            return `Selected polygon has an extent area of ${layer.feature.properties.area}.`;
+            return `The mangrove polygon you selected represents an extent area of ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}. The total mangrove extent in Guyana (all regions) for this year is ${calculate_total(result['data'])} ha`;
         }, {className: "zTop"});
     });
     layer_xhr_array.push(xhr_primary_extent);
@@ -187,21 +224,24 @@ function redraw_map_layers(){
                 color: 'lime',  //Outline color
                 fillOpacity: 0.4,
             },
-            pane: 'left'
+            pane: 'left',
+            onEachFeature: click_feature
         }).bindPopup(function (layer) {
-            return `Selected polygon represents mangrove extent gains totaling an area of ${layer.feature.properties.area}.`;
+            return `The mangrove polygon you selected represents a gained area of ${layer.feature.properties.area}ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}. The total mangrove gained area in Guyana (all regions) for this year is ${calculate_total(result['data'].filter(filter_gain))} ha`;
         }, {className: "zTop"});
 
         primary_loss_layer = L.geoJSON(result['data'].filter(filter_regions).filter(filter_loss), {
             style: {
                 weight: 2,
                 opacity: 1,
-                color: 'red',  //Outline color
+                color: 'red',
+                fillColor: 'red',  //Outline color
                 fillOpacity: 0.4,
             },
-            pane: 'left'
+            pane: 'left',
+            onEachFeature: click_feature
         }).bindPopup(function (layer) {
-            return `Selected polygon represents mangrove extent losses totaling an area of ${layer.feature.properties.area}.`;
+            return `The mangrove polygon you selected represents a lost area of ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}. The total mangrove lost area in Guyana (all regions) for this year is ${calculate_total(result['data'].filter(filter_loss))} ha`;
         }, {className: "zTop"});
     });
     layer_xhr_array.push(xhr_primary_change);
@@ -217,15 +257,18 @@ function redraw_map_layers(){
                 color: 'cyan',  //Outline color
                 fillOpacity: 0.4,
             },
-            pane: 'left'
+            pane: 'left',
+            onEachFeature: click_feature
         }).bindPopup(function (layer) {
-            return `Selected polygon represents mangrove restoration impacts totaling an area of ${layer.feature.properties.area}. The affected localities are ${layer.feature.properties.impact_ext}`;
+            return `The mangrove polygon you selected represents a restored area ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}, affecting the following localities: ${layer.feature.properties.impact_ext}. The total mangrove restored area in Guyana (all regions) for this year is ${calculate_total(result['data'])} ha.`;
         }, {className: "zTop"});
     });
     layer_xhr_array.push(xhr_primary_impact);
 
     let compare = document.getElementById('comparison_year').value;
     if(compare != 0){
+        comparison_label.innerHTML = `<h4>${compare}</h4>`;
+        comparison_label.style.display = 'flex';
         let xhr_compare_extent = ajax_call("get-extent-layer", {
             'schema': "extent",
             'layer': document.getElementById('comparison_year').value
@@ -239,9 +282,10 @@ function redraw_map_layers(){
                     color: 'green',  //Outline color
                     fillOpacity: 1,
                 },
-                pane: 'right'
+                pane: 'right',
+                onEachFeature: click_feature
             }).bindPopup(function (layer) {
-                return `Selected polygon has an extent area of ${layer.feature.properties.area}.`;
+                return `The mangrove polygon you selected represents an extent area of ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${compare}. The total mangrove extent in Guyana (all regions) for this year is ${calculate_total(result['data'])} ha`;
             }, {className: "zTop"});
         });
         layer_xhr_array.push(xhr_compare_extent);
@@ -257,9 +301,10 @@ function redraw_map_layers(){
                     color: 'lime',  //Outline color
                     fillOpacity: 0.4,
                 },
-                pane: 'right'
+                pane: 'right',
+                onEachFeature: click_feature
             }).bindPopup(function (layer) {
-                return `Selected polygon represents mangrove extent gains totaling an area of ${layer.feature.properties.area}.`;
+                return `The mangrove polygon you selected represents a gained area of ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}. The total mangrove gained area in Guyana (all regions) for this year is ${calculate_total(result['data'].filter(filter_gain))} ha`;
             }, {className: "zTop"});
 
             comparison_loss_layer = L.geoJSON(result['data'].filter(filter_regions).filter(filter_loss), {
@@ -269,9 +314,10 @@ function redraw_map_layers(){
                     color: 'red',  //Outline color
                     fillOpacity: 0.4,
                 },
-                pane: 'right'
+                pane: 'right',
+                onEachFeature: click_feature
             }).bindPopup(function (layer) {
-                return `Selected polygon represents mangrove extent losses totaling an area of ${layer.feature.properties.area}.`;
+                return `The mangrove polygon you selected represents a lost area of ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${compare}. The total mangrove lost area in Guyana (all regions) for this year is ${calculate_total(result['data'].filter(filter_loss))} ha`;
             }, {className: "zTop"});
         });
         layer_xhr_array.push(xhr_compare_change);
@@ -287,9 +333,10 @@ function redraw_map_layers(){
                     color: 'cyan',  //Outline color
                     fillOpacity: 0.4,
                 },
-                pane: 'right'
+                pane: 'right',
+                onEachFeature: click_feature
             }).bindPopup(function (layer) {
-            return `Selected polygon represents mangrove restoration impacts totaling an area of ${layer.feature.properties.area}. The affected localities are ${layer.feature.properties.impact_ext}`;
+            return `The mangrove polygon you selected represents a restored area ${layer.feature.properties.area} ha in Region ${layer.feature.properties.reg_num} (${layer.feature.properties.reg_name}) in ${selected_year}, affecting the following localities: ${layer.feature.properties.impact_ext}. The total mangrove restored area in Guyana (all regions) for this year is ${calculate_total(result['data'])} ha.`;
             }, {className: "zTop"});
         });
         layer_xhr_array.push(xhr_compare_impact);
@@ -305,6 +352,7 @@ function redraw_map_layers(){
             document.getElementsByClassName('leaflet-sbs-range')[0].setAttribute('onmouseout', 'map.dragging.enable()')
         }
         map.fitBounds(primary_extent_layer.getBounds());
+        loader.style.display = 'none';
     })
 }
 

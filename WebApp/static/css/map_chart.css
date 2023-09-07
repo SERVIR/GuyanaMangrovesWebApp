@@ -448,8 +448,6 @@ label {
     background-color: green;
 }
 
-
-
 .dataTables_scrollBody, .dataTables_scrollHead {
     width: auto;
 }
@@ -480,7 +478,7 @@ label {
 }
 
 .toggle-row {
-    width: 50%;
+    width: 70%;
     align-items: center;
 }
 
@@ -495,5 +493,77 @@ label {
 
 .leaflet-sbs-range {
     background: none !important;
-    width: 100% !important;
+    width: 60% !important;
+    margin-left: 20% !important;
+}
+
+.vertmenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+
+.extent_label {
+    height: 15px;
+    width: 15px;
+    background: green;
+    margin: auto;
+}
+
+.gain_label {
+    height: 15px;
+    width: 15px;
+    background: lime;
+    margin: auto;
+}
+
+.loss_label {
+    height: 15px;
+    width: 15px;
+    background: red;
+    margin: auto;
+}
+
+.restoration_label {
+    height: 15px;
+    width: 15px;
+    background: aqua;
+    margin: auto;
+}
+
+.selected_label {
+    height: 15px;
+    width: 15px;
+    border: 2px solid yellow;
+    margin: auto;
+}
+
+#primary_year_indicator, #comparison_year_indicator {
+    width: 100px;
+    background: white;
+    height: 50px;
+    position: absolute;
+    z-index: 20;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#primary_year_indicator {
+    top: 130px;
+    left: 60px;
+}
+
+#comparison_year_indicator {
+    top: 130px;
+    right: 10px;
+}
+
+#primary_year_indicator > h4, #comparison_year_indicator > h4 {
+    margin: unset;
 }

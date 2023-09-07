@@ -19,8 +19,9 @@
 }
 
 .accordion-collapse.collapse.show {
-    width: 50vh;
+    width: 25vw;
     max-width: 100%;
+    min-width: 340px;
 }
 
 

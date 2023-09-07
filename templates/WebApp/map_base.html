@@ -49,6 +49,11 @@
 {% endblock %}
 
 {% block content %}
+    <div id="primary_year_indicator"></div>
+    <div id="comparison_year_indicator"></div>
+    <div id="loader">
+        <h4>Loading Data...</h4>
+    </div>
     <div id="map_chart" style="height:calc(100vh - 166px);">
     </div>
     <div class="accordion" id="mc_tab_container">
@@ -63,7 +68,7 @@
                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseMC" aria-expanded="true"
                         aria-controls="collapseMC">
-                    Layers
+                    Map Controls
                 </button>
             </h2>
             <div id="collapseMC" class="accordion-collapse collapse show"
@@ -74,12 +79,21 @@
                             <ul class="m-0 nav nav-fill nav-justified nav-tabs" id="mc_tab_list"
                                 role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="active nav-link p-0" id="layers-tab"
+                                    <button class="active nav-link p-0" id="params-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#params" type="button"
+                                            role="tab"
+                                            aria-controls="params" aria-selected="true">
+                                        Parameters
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link p-0" id="layers-tab"
                                             data-bs-toggle="tab"
                                             data-bs-target="#layers" type="button"
                                             role="tab"
-                                            aria-controls="layers" aria-selected="true">
-                                        Data Layers
+                                            aria-controls="layers" aria-selected="false">
+                                        Layers
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -91,10 +105,24 @@
                                             aria-selected="false"> Basemaps
                                     </button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link p-0" id="legend-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#legend" type="button"
+                                            role="tab"
+                                            aria-controls="legend" aria-selected="false">
+                                        Legend
+                                    </button>
+                                </li>
                             </ul>
                             <!-- Tab pane: Layers -->
                             <div class="border-grey bg-white tab-content">
-                                <div class="tab-pane active p-2 map-tab" id="layers"
+                                <div class="tab-pane active p-2 map-tab vertmenu" id="params"
+                                     role="tabpanel"
+                                     aria-labelledby="params-tab">
+                                    {% block paramControls %}{% endblock %}
+                                </div>
+                                <div class="tab-pane p-2 map-tab vertmenu" id="layers"
                                      role="tabpanel"
                                      aria-labelledby="layers-tab">
                                     {% block layerControls %}{% endblock %}
@@ -156,6 +184,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="tab-pane p-2 map-tab vertmenu" id="legend"
+                                     role="tabpanel"
+                                     aria-labelledby="legend-tab">
+                                    {% block legend %}{% endblock %}
                                 </div>
                             </div>
                         </div>
