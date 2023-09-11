@@ -94,7 +94,7 @@ def get_mangrove_layer(request):
 
         return JsonResponse(json_obj)
 
-
+@csrf_exempt
 def get_available_years(request):
     json_obj = {}
 
