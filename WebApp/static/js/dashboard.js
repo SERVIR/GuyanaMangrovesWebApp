@@ -8,7 +8,7 @@ $(function () {
             align: 'left'
         },
         xAxis: {
-            categories: ['Region 1', 'Region 1', 'Region 1', 'Region 1', 'Region 1', 'Region 1'],
+            categories: ['Region 1', 'Region 2', 'Region 3', 'Region 4', 'Region 5', 'Region 6'],
             crosshair: true,
             accessibility: {
                 description: 'Regions'
