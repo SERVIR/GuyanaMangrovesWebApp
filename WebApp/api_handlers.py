@@ -133,7 +133,7 @@ def download(request):
         expected_file_name = ""
         try:
             expected_file_name = "GuyMIS.zip"
-            expected_file_location = os.path.join(os.getcwd(), expected_file_name)
+            expected_file_location = os.path.join('/servir_apps/data/', expected_file_name)
             does_file_exist = os.path.exists(expected_file_location)
 
         except IOError:
