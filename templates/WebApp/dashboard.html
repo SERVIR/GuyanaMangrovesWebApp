@@ -1,0 +1,73 @@
+{% extends "WebApp/app_base.html" %}
+{% load static %}
+{% block title %}Guyana Mangroves{% endblock %}
+{% block script %}
+    <!-- Custom styles-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link href="{% static '/css/about.css' %}" rel="stylesheet" type="text/css">
+    <!-- Custom scripts-->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.highcharts.com/modules/no-data-to-display.js"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <!-- Root container for the about page's content -->
+    <div class="container-fluid  bg-gray-300">
+        <!-- About -->
+        <!-- Update the text inside <p> tags in order to update the about text -->
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow mb-4 w-75 centered">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">At a Glance</h6>
+                    </div>
+                    <div class="carousel">
+                        <div class="p-4 minicard text-center">
+                            <h4>21,354 ha</h4>
+                            <h5>Mangrove Extent (2020)</h5>
+                        </div>
+                        <div class="p-4 minicard text-center">
+                            <h4>12,142 ha</h4>
+                            <h5>Mangrove Losses (2015-2020)</h5>
+                        </div>
+                        <div class="p-4 minicard text-center">
+                            <h4>4,845 ha</h4>
+                            <h5>Mangrove Gains (2015-2020)</h5>
+                        </div>
+                    </div>
+                    <div class="carousel">
+                        <div class="p-4 minicard text-center">
+                            <h4>32</h4>
+                            <h5>Restoration Projects (2010-2020)</h5>
+                        </div>
+                        <div class="p-4 minicard text-center">
+                            <h4>19</h4>
+                            <h5>Seedling Plantations</h5>
+                        </div>
+                        <div class="p-4 minicard text-center">
+                            <h4>13</h4>
+                            <h5>Green-Grey Infrastructure</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow mb-4 w-50 centered">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Charts</h6>
+                    </div>
+                    <div id="extent_chart">
+                    </div>
+                    <div id="change_chart">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

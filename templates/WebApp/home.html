@@ -26,7 +26,7 @@
                     <div class="text-center text-white vertical_center">
                         <!-- Title on the hero image-->
                         <p id="title_class">
-                            Guyana Mangroves </p>
+                            Guyana Mangrove Information System (GuyMIS) </p>
                         <!-- Tagline under the title on the hero image-->
                         <p id="tagline_class">
                             This web application provides an interface to view mangrove data from Guyana. Through this
@@ -39,25 +39,86 @@
         <!-- Search bar -->
         <!-- Search results are based on the title on the cards shown -->
         <div class="container-fluid">
-                <!-- Description of the website -->
-                <!-- The description can be updated in the <p> tags below -->
-                <div class="row">`
-                    <div class="col-lg-12 mb-4">
-                        <br>
-                        <div class="card shadow">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Description</h6>
+            <!-- Description of the website -->
+            <!-- The description can be updated in the <p> tags below -->
+            <div class="row">`
+                <div class="col-lg-12 mb-4">
+                    <br>
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Description</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
                             </div>
-                            <div class="card-body">
-                                <div class="text-center">
-                                </div>
-                                <p>Application description goes here...</p>
+                            <p>GuyMIS is a web application dedicated to monitoring the extent and the change of
+                                mangroves in Guyana.
+                                Mangroves serve as a link between terrestrial and marine environments and as such,
+                                perform multiple functions including coastal protection, livelihoods for coastal
+                                communities, carbon sequestration and other countless ecosystem services. . The loss of
+                                mangroves has generated diverse negative climatic, social, ecological, and environmental
+                                impacts, thereby promoting the need for strategic plans for management, protection, and
+                                restoration actions.
+
+                                Guyana has taken progressive steps to manage its mangrove forests by implementing
+                                several strategies with National Agricultural Research and Extension Institute (NAREI)
+                                leading the drive to sustainably manage, restore and monitor the country’s mangrove
+                                resources since 2010.
+
+                                This web application is a critical component of NAREI’s mangrove monitoring system,
+                                which integrated GIS, remote sensing, field surveys and community engagement and
+                                research to better monitor and assess Guyana’s mangroves.
+
+                                The objective of the App is to make mangrove-related data freely available to partner
+                                organizations, government, and civil society on mangrove-related land-use change data
+                                that will allow for improved and efficient decision-making and actions related to
+                                hotspots of deforestation; engagement in land-use planning, policy-making, and actions
+                                that protect mangroves; planning for protection of farmers in low-lying coastal area;
+                                and efforts to support forest and biodiversity conservation in Guyana.
+
+                                A publication detailing the methodology used for this tool is in preparation.
+                            </p>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Mangrove Extent Time Series and
+                                Change</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
                             </div>
+                            <p>This application used combined optical and radar datasets freely accessible and processed
+                                in Google Earth Engine (GEE) cloud platform for 2010, 2015 and 2020. Optical satellite
+                                imageries include Landsat 7 ETM (2010), Landsat 8 OLI (2015 & 2020) and Sentinel 2
+                                (2020). Radar imageries include Alos/Palsar (2010) and Sentinel 1 (2015 & 2020). Random
+                                Forest Classification algorithm was used to classify mangrove and non-mangrove pixels,
+                                we filtered the mangrove pixels to only display mangrove extent for each year. We used
+                                the mangrove time series generated in GEE to calculate gains and losses between each
+                                year.
+                            </p>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Restoration Impact Extent</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
+                            </div>
+                            <p>Mangrove restoration sites were determined by National Agricultural Research and
+                                Extension Institute (NAREI) Mangrove Department, including location, year of activities
+                                and types of interventions. Mangrove extent generated in GEE for 2020 was used to
+                                calculate the impact extent of the restored areas.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!-- End of Main Content -->
 

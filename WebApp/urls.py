@@ -11,8 +11,10 @@ urlpatterns = [
     path('methodology/', views.home, name='methodology'),
     path('about/', views.about, name='about'),
     path('map/', views.map, name='map'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('login/', views.login, name='login'),
     path('feedback/', views.feedback, name='feedback'),
+    path('download/', api_handlers.download, name='download'),
 
     path('map/get-extent-layer/', api_handlers.get_mangrove_layer, name='get-extent-layer'),
     path('map/get-change-layer/', api_handlers.get_mangrove_layer, name='get-change-layer'),

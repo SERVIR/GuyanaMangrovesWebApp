@@ -125,3 +125,38 @@ def get_available_years(request):
 
         return JsonResponse(json_obj)
 
+@csrf_exempt
+def download(request):
+    json_obj = {}
+    try:
+        expected_file_location = ""
+        expected_file_name = ""
+        try:
+            expected_file_name = "GuyMIS.zip"
+            expected_file_location = os.path.join(os.getcwd(), expected_file_name)
+            does_file_exist = os.path.exists(expected_file_location)
+
+        except IOError:
+            does_file_exist = False
+
+        if does_file_exist:
+            the_file_to_send = open(expected_file_location, 'rb')
+            response = HttpResponse(the_file_to_send, content_type='application/zip')
+            response['Content-Disposition'] = 'attachment; filename=' + str(
+                expected_file_name)
+            return response
+        else:
+            # File did not exist
+            json_obj["data"] = json.dumps(
+                "File does not exist on server.  There was an error generating this file during the server job")
+
+            return JsonResponse(json_obj)
+
+    except Exception as e:
+        print(e)
+        # File did not exist
+        json_obj["data"] = json.dumps(
+            "There was an error generating this file during the server job")
+
+        return JsonResponse(json_obj)
+

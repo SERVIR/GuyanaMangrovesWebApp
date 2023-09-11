@@ -27,6 +27,9 @@ def login(request):
 def about(request):
     return render(request, 'WebApp/about.html', {})
 
+def dashboard(request):
+    return render(request, 'WebApp/dashboard.html', {})
+
 def map(request):
     return render(request, 'WebApp/map.html', {})
 

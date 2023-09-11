@@ -24,7 +24,32 @@
                     </div>
                     <div class="card-body">
                         <div class="text-left text-dark">
-                            <p>This application serves as a user interface to interact with mangrove data in Guyana.</p>
+                            <p>GuyMIS is a web application dedicated to monitoring the extent and the change of
+                                mangroves in Guyana.
+                                Mangroves serve as a link between terrestrial and marine environments and as such,
+                                perform multiple functions including coastal protection, livelihoods for coastal
+                                communities, carbon sequestration and other countless ecosystem services. . The loss of
+                                mangroves has generated diverse negative climatic, social, ecological, and environmental
+                                impacts, thereby promoting the need for strategic plans for management, protection, and
+                                restoration actions.
+
+                                Guyana has taken progressive steps to manage its mangrove forests by implementing
+                                several strategies with National Agricultural Research and Extension Institute (NAREI)
+                                leading the drive to sustainably manage, restore and monitor the country’s mangrove
+                                resources since 2010.
+
+                                This web application is a critical component of NAREI’s mangrove monitoring system,
+                                which integrated GIS, remote sensing, field surveys and community engagement and
+                                research to better monitor and assess Guyana’s mangroves.
+
+                                The objective of the App is to make mangrove-related data freely available to partner
+                                organizations, government, and civil society on mangrove-related land-use change data
+                                that will allow for improved and efficient decision-making and actions related to
+                                hotspots of deforestation; engagement in land-use planning, policy-making, and actions
+                                that protect mangroves; planning for protection of farmers in low-lying coastal area;
+                                and efforts to support forest and biodiversity conservation in Guyana.
+                                A publication detailing the methodology used for this tool is in preparation.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -41,32 +66,51 @@
                     <div class="card-body text-center">
                         <span onclick="open_more_info(this)"
                               class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/kene.png' %}" alt="img1"
+                                class="team-member">
+                                            <p>(NAREI) Kene Moseley</p>
+                                            <span style="display:none;" class="member_title">
+                                                Project Coordinator of Mangrove Restoration and Management Department
+                                            </span>
+                                            <span style="display:none;" class="more_info">
+                                        Kene Moseley is the Project Coordinator of Mangrove Restoration and Management Department of NAREI.  Kene has over a decade of experience successfully implementing various restoration interventions along Guyana's coast.  She has a Diploma in Project Management, Post Graduate Diploma in Urban Planning and Management and Certificate in Sustainable Environmental Management.</span>
+                                        </span>
+
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/kim.png' %}" alt="img1"
+                                class="team-member">
+                                            <p>(NAREI) Kim Chan-Bagot</p>
+                                            <span style="display:none;" class="member_title">
+                                                Geographical Information Systems (GIS) Consultant
+                                            </span>
+                                            <span style="display:none;" class="more_info">
+                                        Kim Chan-Bagot is a Geographical Information Systems (GIS) Consultant for SERVIR-Amazonia and National Agricultural Research and Extension Institute (NAREI) Mangrove Department. She specializes in the use of optical and radar remote sensing applications for land use and land cover change (particularly in mangrove forest), vulnerability and sensitivity assessments and impact assessments in Guyana. She has a BSc in Geography, MSc in Disaster Risk Management and Climate Governance and MSc in Urban and Regional Planning.</span>
+                                        </span>
+
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
+                                src="{% static 'images/teammembers/zola.jpg' %}" alt="img1"
+                                class="team-member">
+                                            <p>(NAREI) Zola Narine</p>
+                                            <span style="display:none;" class="member_title">
+                                                Monitoring/Geographical Information Systems (GIS) Officer
+                                            </span>
+                                            <span style="display:none;" class="more_info">
+                                        Zola Narine is the Monitoring/Geographical Information System (GIS) Officer for NAREI’s Mangrove Departement. Her work involves management of the Mangrove GIS database and mapping of mangrove forest in Guyana. She holds a Certificate in Agriculture, Diploma in Forestry and BSc in Forestry.</span>
+                                        </span>
+
+                        <span onclick="open_more_info(this)"
+                              class="p-3 d-inline-block text-decoration-none pointer"><img
                                 src="{% static 'images/teammembers/AlexGoberna.jpg' %}" alt="img1"
                                 class="team-member">
                                             <p>(SERVIR SCO GIT) Alexandre Goberna</p>
                                             <span style="display:none;" class="member_title">
-                                                Software Development Lead for the Amazon Fire Dashboard
+                                                Software Development Lead for the Guyana Mangroves Monitor
                                             </span>
-                                        </span>
-
-                        <span onclick="open_more_info(this)"
-                              class="p-3 d-inline-block text-decoration-none pointer"><img
-                                src="{% static 'images/teammembers/Githika.JPG' %}" alt="img1"
-                                class="team-member">
-                                                    <p>(SERVIR SCO GIT) Githika Tondapu</p>
-                                                    <span style="display:none;" class="member_title">
-                                                        Webpage Template Author
-                                                    </span>
-                                        </span>
-
-                        <span onclick="open_more_info(this)"
-                              class="p-3 d-inline-block text-decoration-none pointer"><img
-                                src="{% static 'images/teammembers/BillyZ.jpg' %}" alt="img1"
-                                class="team-member">
-                                                    <p>(SERVIR SCO GIT) William Ashmall</p>
-                                                    <span style="display:none;" class="member_title">
-                                                        Software Engineering Lead
-                                                    </span>
+                                            <span style="display:none;" class="more_info">
+                                        Alex is a member of the SERVIR Science Coordination Office's Geospatial Information Technology team. As a fullstack software engineer Alex assists in development and deployment of applications for the SERVIR member hubs.
+                                    </span>
                                         </span>
                     </div>
                 </div>
@@ -101,8 +145,17 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Logos</h6>
                 </div>
-                <div class="card-body text-center">
-                    <a href="" class="p-3"><img class="org-logo" src="{% static 'images/logos/AMZ_Alliance.jpg' %}"></a>
+                <div class="logo-container">
+                    <div class="card-body text-center">
+                        <a href="" class="p-3"><img class="org-logo" src="{% static 'images/logos/AMZ_Alliance.jpg' %}"></a>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="" class="p-3"><img class="org-logo"
+                                                    src="{% static 'images/logos/GuyanaMinistryofAgricultureLogo.png' %}"></a>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="" class="p-3"><img class="org-logo" src="{% static 'images/logos/NAREI-Logo.webp' %}"></a>
+                    </div>
                 </div>
             </div>
         </div>
