@@ -1,7 +1,8 @@
 /* styles specific to about page */
 .team-member {
     height: 150px;
-    border-radius: 50%;
+    border-radius: 10%;
+    border: 1px solid #dddfeb;
 }
 
 .org-logo {

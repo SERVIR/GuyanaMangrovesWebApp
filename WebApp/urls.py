@@ -8,7 +8,7 @@ from WebApp import api_handlers
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('methodology/', views.home, name='methodology'),
+    path('home/', views.home, name='home'),
     path('about/', views.about, name='about'),
     path('map/', views.map, name='map'),
     path('dashboard/', views.dashboard, name='dashboard'),
