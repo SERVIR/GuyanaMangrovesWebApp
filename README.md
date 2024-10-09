@@ -2,8 +2,13 @@
 
 Please feel free to contact us if you have any questions.
 
+### Notice
+
+As of October 2024 a new version of this application is under development using the Vue framework. The new repository is [https://github.com/SERVIR/guyana-mangrove-app](https://github.com/SERVIR/guyana-mangrove-app)
+
 ### Authors
 
+- [Alex Goberna (NASA/USRA)](https://github.com/agoberna)
 - [Githika Tondapu (NASA/USRA)](https://github.com/gtondapu)
 - [Francisco Delgado (NASA/USRA)](https://github.com/fdelgadosv)
 - [Lance Gilliland (NASA/JACOBS)](https://github.com/lgilliland)
