@@ -34,8 +34,16 @@ def layer_name_to_metadata(layer_name):
 def get_mangrove_layer(request):
     json_obj = {}
 
-    mangrove_table = request.POST.get("layer")
-    mangrove_schema = request.POST.get("schema")
+    if request.method == 'POST':
+        mangrove_table = request.POST.get("layer")
+        mangrove_schema = request.POST.get("schema")
+    elif request.method == 'GET':
+        mangrove_table = request.GET.get("layer")
+        mangrove_schema = request.GET.get("schema")
+    elif request.method == 'OPTIONS':
+        mangrove_table = request.OPTIONS.get("layer")
+        mangrove_schema = request.OPTIONS.get("schema")
+
 
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3} port={4}".format(db, user, host, password, port))
